@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:05'
+updated_date: '2026-09-23 05:39'
 labels:
   - infra
   - stack-skeleton
@@ -31,7 +31,7 @@ Apple Contacts sends CardDAV credentials with HTTP Basic auth on every request, 
 - [ ] #2 The app serves a custom domain over HTTPS with a valid certificate and redirects HTTP to HTTPS
 - [ ] #3 Litestream continuously replicates the database, and a documented restore into a fresh volume succeeds
 - [ ] #4 The machine stays running when idle (no auto-stop)
-- [ ] #5 README documents deploy, running the passkey setup rake task in production, and restore steps
+- [x] #5 README documents deploy, running the passkey setup rake task in production, and restore steps
 <!-- AC:END -->
 
 ## Definition of Done

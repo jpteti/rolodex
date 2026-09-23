@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:31'
+updated_date: '2026-09-23 05:40'
 labels:
   - web
   - stack-web
@@ -27,10 +27,10 @@ iOS does not copy existing iCloud contacts into a newly added CardDAV account, s
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Uploading a multi-contact .vcf creates one contact per vCard, keeping each raw vCard
-- [ ] #2 A vCard whose UID matches an existing contact updates that contact instead of duplicating it
-- [ ] #3 vCards without a UID get a generated one
-- [ ] #4 The result page reports counts of created, updated, and failed cards, with a reason per failure
+- [x] #1 Uploading a multi-contact .vcf creates one contact per vCard, keeping each raw vCard
+- [x] #2 A vCard whose UID matches an existing contact updates that contact instead of duplicating it
+- [x] #3 vCards without a UID get a generated one
+- [x] #4 The result page reports counts of created, updated, and failed cards, with a reason per failure
 - [ ] #5 A full export from macOS Contacts imports without timing out the request (use a background job if needed)
 <!-- AC:END -->
 

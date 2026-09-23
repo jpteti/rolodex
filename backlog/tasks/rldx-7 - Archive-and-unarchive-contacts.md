@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:11'
+updated_date: '2026-09-23 05:40'
 labels:
   - web
   - carddav
@@ -28,11 +28,11 @@ The core requirement beyond sync: keep contacts the user no longer wants on thei
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 A contact detail page has an Archive action; archived contacts leave the main list and appear in an Archive section
-- [ ] #2 Archived contacts are absent from PROPFIND listings, multiget, and GET (404), and the address book getctag changes on archive
+- [x] #1 A contact detail page has an Archive action; archived contacts leave the main list and appear in an Archive section
+- [x] #2 Archived contacts are absent from PROPFIND listings, multiget, and GET (404), and the address book getctag changes on archive
 - [ ] #3 After a device refresh, the archived contact is gone from macOS and iOS Contacts
 - [ ] #4 Unarchiving returns the contact to the main list and to devices on their next refresh
-- [ ] #5 Archived contacts stay viewable in the web UI with all fields intact
+- [x] #5 Archived contacts stay viewable in the web UI with all fields intact
 <!-- AC:END -->
 
 ## Definition of Done

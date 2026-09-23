@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:17'
+updated_date: '2026-09-23 05:40'
 labels:
   - carddav
   - stack-lifecycle
@@ -29,10 +29,10 @@ With only getctag, Apple clients re-list the whole address book on every change.
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 The address book advertises sync-collection and a DAV:sync-token
-- [ ] #2 sync-collection with a token returns only changed contacts, and removed contacts as 404 entries
-- [ ] #3 Archiving or trashing a contact reports it as removed; unarchiving or restoring reports it as added
-- [ ] #4 An unknown or expired token returns the RFC 6578 valid-sync-token error so clients fall back to a full sync
+- [x] #1 The address book advertises sync-collection and a DAV:sync-token
+- [x] #2 sync-collection with a token returns only changed contacts, and removed contacts as 404 entries
+- [x] #3 Archiving or trashing a contact reports it as removed; unarchiving or restoring reports it as added
+- [x] #4 An unknown or expired token returns the RFC 6578 valid-sync-token error so clients fall back to a full sync
 - [ ] #5 Apple clients keep syncing correctly with sync tokens enabled
 <!-- AC:END -->
 

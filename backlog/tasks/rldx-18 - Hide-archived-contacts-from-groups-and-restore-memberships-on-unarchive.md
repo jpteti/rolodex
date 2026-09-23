@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:37'
+updated_date: '2026-09-23 05:40'
 labels:
   - carddav
   - stack-groups
@@ -28,10 +28,10 @@ Group vCards list members by UID. If a group still lists an archived contact, de
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Group vCards served over CardDAV omit archived members
-- [ ] #2 A device PUT of a group vCard does not drop the stored memberships of archived contacts
+- [x] #1 Group vCards served over CardDAV omit archived members
+- [x] #2 A device PUT of a group vCard does not drop the stored memberships of archived contacts
 - [ ] #3 Unarchiving a contact restores it to every group it belonged to, on the web and on devices
-- [ ] #4 The web UI shows an archived contact's remembered groups
+- [x] #4 The web UI shows an archived contact's remembered groups
 <!-- AC:END -->
 
 ## Definition of Done

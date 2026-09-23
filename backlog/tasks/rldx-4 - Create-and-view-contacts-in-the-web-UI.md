@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 04:58'
+updated_date: '2026-09-23 05:40'
 labels:
   - web
   - stack-skeleton
@@ -27,11 +27,11 @@ The first user-visible slice: add a contact on the web and see it listed. Decisi
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 A signed-in user can create a contact with name, organization, and one or more emails and phones
-- [ ] #2 The contact stores a generated vCard with a UID, and the extracted columns match its contents
-- [ ] #3 The contact list shows all contacts sorted by family name, then given name, with organization-only contacts sorted by organization
-- [ ] #4 A contact detail page shows the stored fields
-- [ ] #5 Tests cover vCard generation and field extraction round trips
+- [x] #1 A signed-in user can create a contact with name, organization, and one or more emails and phones
+- [x] #2 The contact stores a generated vCard with a UID, and the extracted columns match its contents
+- [x] #3 The contact list shows all contacts sorted by family name, then given name, with organization-only contacts sorted by organization
+- [x] #4 A contact detail page shows the stored fields
+- [x] #5 Tests cover vCard generation and field extraction round trips
 <!-- AC:END -->
 
 ## Definition of Done

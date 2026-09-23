@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:12'
+updated_date: '2026-09-23 05:40'
 labels:
   - carddav
   - stack-lifecycle
@@ -27,11 +27,11 @@ Once devices sync, users will add and edit contacts on their phone. CardDAV writ
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 PUT with If-None-Match: * creates a contact, returns 201 and an ETag, and the contact appears in the web UI
-- [ ] #2 PUT with a matching If-Match updates the contact; a stale ETag returns 412 and changes nothing
-- [ ] #3 Unknown vCard properties sent by the device survive a later GET byte-for-byte in value
-- [ ] #4 Extracted columns update from the new vCard on every write
-- [ ] #5 Malformed vCards return 400 or 415 and store nothing
+- [x] #1 PUT with If-None-Match: * creates a contact, returns 201 and an ETag, and the contact appears in the web UI
+- [x] #2 PUT with a matching If-Match updates the contact; a stale ETag returns 412 and changes nothing
+- [x] #3 Unknown vCard properties sent by the device survive a later GET byte-for-byte in value
+- [x] #4 Extracted columns update from the new vCard on every write
+- [x] #5 Malformed vCards return 400 or 415 and store nothing
 - [ ] #6 Contacts created and edited on an iPhone and a Mac show up correctly in the web UI
 <!-- AC:END -->
 
