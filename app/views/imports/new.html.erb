@@ -1,0 +1,15 @@
+<% content_for :title, "Import contacts · Rolodex" %>
+
+<p><%= link_to "← Contacts", contacts_path %></p>
+<h1>Import contacts</h1>
+
+<p>To move contacts from macOS Contacts, select all contacts (⌘A), then choose File → Export → Export vCard, and upload the file here.</p>
+<p class="muted">A card whose UID matches a contact already in Rolodex updates that contact instead of adding a duplicate.</p>
+
+<%= form_with scope: :import, url: imports_path, multipart: true, class: "stack narrow" do |form| %>
+  <label class="field">
+    <span class="field__label">vCard file</span>
+    <%= form.file_field :file, accept: ".vcf,text/vcard,text/x-vcard", required: true %>
+  </label>
+  <div><%= form.submit "Import", class: "button button--primary" %></div>
+<% end %>

@@ -1,0 +1,39 @@
+<% content_for :title, "Import · Rolodex" %>
+<% unless @import.finished? %>
+  <% content_for :head do %><meta http-equiv="refresh" content="2"><% end %>
+<% end %>
+
+<p><%= link_to "← Contacts", contacts_path %></p>
+<h1>Import of <%= @import.filename %></h1>
+
+<p id="import_status">
+  <% if !@import.finished? %>
+    Importing… This page refreshes until the import finishes.
+  <% elsif @import.status == "done" %>
+    Finished <%= l @import.finished_at, format: :long %>.
+  <% else %>
+    The import stopped with an error.
+  <% end %>
+</p>
+
+<div class="card">
+  <dl class="details" id="import_counts">
+    <dt>Created</dt><dd id="created_count"><%= @import.created_count %></dd>
+    <dt>Updated</dt><dd id="updated_count"><%= @import.updated_count %></dd>
+    <dt>Failed</dt><dd id="failed_count"><%= @import.failures.size %></dd>
+  </dl>
+</div>
+
+<% if @import.failures.any? %>
+  <h2>Failures</h2>
+  <ul class="list" id="import_failures">
+    <% @import.failures.each do |failure| %>
+      <li class="list__row">
+        <div>
+          <strong><%= failure["card"] ? "Card #{failure['card']}" : "Import" %><%= ": #{failure['name']}" if failure["name"].present? %></strong>
+          <div class="muted"><%= failure["reason"] %></div>
+        </div>
+      </li>
+    <% end %>
+  </ul>
+<% end %>

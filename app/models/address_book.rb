@@ -2,6 +2,7 @@ class AddressBook < ApplicationRecord
   belongs_to :user
   has_many :contacts, dependent: :destroy
   has_many :sync_changes, dependent: :delete_all
+  has_many :imports, dependent: :delete_all
 
   # Changes whenever a contact visible to devices changes. Served as the CalendarServer getctag.
   def record_change!
