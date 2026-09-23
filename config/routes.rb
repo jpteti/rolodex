@@ -16,9 +16,12 @@ Rails.application.routes.draw do
 
   resources :app_passwords, only: %i[ index create destroy ]
 
-  scope "dav", module: "carddav", as: "carddav" do
-    get "/", to: "root#show", as: :root
-  end
+  # CardDAV. Clients find the service from /.well-known/carddav (RFC 6764) or by probing "/".
+  dav_verbs = %i[ options propfind proppatch report get put delete mkcol ]
+  match "/.well-known/carddav", to: redirect("/dav/", status: 301), via: :all
+  match "/", to: "carddav/dav#serve", via: %i[ options propfind ]
+  match "/dav", to: "carddav/dav#serve", via: dav_verbs, as: :carddav_root
+  match "/dav/*path", to: "carddav/dav#serve", via: dav_verbs, format: false
 
   resources :contacts, only: %i[ index show new create ]
 
