@@ -1,0 +1,35 @@
+<% content_for :title, "App passwords · Rolodex" %>
+
+<h1>App passwords</h1>
+<p class="muted">macOS and iOS Contacts sign in to Rolodex over CardDAV with an app password. Create one for each device and revoke it if the device is lost.</p>
+
+<ul class="list" id="app_passwords">
+  <% @app_passwords.each do |app_password| %>
+    <li class="list__row" id="<%= dom_id(app_password) %>">
+      <div>
+        <strong><%= app_password.name %></strong>
+        <div class="muted">
+          Created <%= l app_password.created_at, format: :long %> ·
+          <%= app_password.last_used_at ? "last used #{time_ago_in_words(app_password.last_used_at)} ago" : "never used" %>
+        </div>
+      </div>
+      <%= button_to "Revoke", app_password_path(app_password), method: :delete, class: "button button--danger",
+            form: { data: { turbo_confirm: "Revoke “#{app_password.name}”? Devices using it will stop syncing." } } %>
+    </li>
+  <% end %>
+  <% if @app_passwords.empty? %>
+    <li class="list__empty">No app passwords yet.</li>
+  <% end %>
+</ul>
+
+<h2>New app password</h2>
+<%= form_with model: @app_password || AppPassword.new, class: "stack narrow" do |form| %>
+  <% if @app_password&.errors&.any? %>
+    <p class="errors"><%= @app_password.errors.full_messages.to_sentence %></p>
+  <% end %>
+  <label class="field">
+    <span class="field__label">Device name</span>
+    <%= form.text_field :name, placeholder: "For example: iPhone", required: true %>
+  </label>
+  <div><%= form.submit "Create app password", class: "button button--primary" %></div>
+<% end %>

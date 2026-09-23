@@ -1,0 +1,16 @@
+<% content_for :title, "App password created · Rolodex" %>
+
+<h1>App password for <%= @app_password.name %></h1>
+<p>Copy this password now. Rolodex shows it only once.</p>
+
+<div class="card stack">
+  <dl class="details">
+    <dt>Server</dt><dd><code><%= request.host %></code></dd>
+    <dt>Username</dt><dd><code><%= Current.user.username %></code></dd>
+    <dt>Password</dt><dd><code class="secret" id="app_password_secret"><%= @app_password.secret %></code></dd>
+  </dl>
+</div>
+
+<p class="muted">On a Mac: Contacts → Settings → Accounts → + → Other Contacts Account → CardDAV, account type Manual. On an iPhone: Settings → Apps → Contacts → Contacts Accounts → Add Account → Other → Add CardDAV Account.</p>
+
+<p><%= link_to "Done", app_passwords_path, class: "button" %></p>

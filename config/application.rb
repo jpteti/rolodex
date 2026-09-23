@@ -23,5 +23,8 @@ module Rolodex
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Production turns this on to refuse CardDAV Basic auth over plain HTTP.
+    config.x.carddav_require_https = false
   end
 end
