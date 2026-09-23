@@ -116,7 +116,9 @@ class Carddav::GroupsTest < ActionDispatch::IntegrationTest
     assert_select "select[name=group] option[selected]", "Family"
 
     get contact_url(@ada)
-    assert_select "dd a", "Family"
+    assert_select "#contact_groups label", text: "Family" do
+      assert_select "input[type=checkbox][checked]"
+    end
   end
 
   test "group cards in an imported .vcf become groups" do

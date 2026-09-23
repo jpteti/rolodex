@@ -42,6 +42,53 @@ class Group < ApplicationRecord
 
   def etag = %("#{Digest::SHA256.hexdigest(served_vcard)[0, 32]}")
 
+  # Creates a group from the web UI with an Apple-style group vCard.
+  def self.create_named(address_book, name)
+    if name.to_s.strip.empty?
+      return address_book.groups.new.tap { |group| group.errors.add(:name, "can't be blank") }
+    end
+
+    uid = SecureRandom.uuid.upcase
+    card = Vcard::Card.new([
+      Vcard::Property.new("VERSION", "3.0"),
+      Vcard::Property.new("PRODID", "-//Rolodex//EN"),
+      Vcard::Property.new("N", Vcard.escape(name.to_s.strip)),
+      Vcard::Property.new("FN", Vcard.escape(name.to_s.strip)),
+      Vcard::Property.new("X-ADDRESSBOOKSERVER-KIND", "group"),
+      Vcard::Property.new("UID", uid)
+    ])
+    address_book.groups.create(uid: uid, resource_name: "#{uid}.vcf", vcard: card.to_s)
+  end
+
+  def rename(new_name)
+    new_name = new_name.to_s.strip
+    if new_name.empty?
+      errors.add(:name, "can't be blank")
+      return false
+    end
+
+    edited = card
+    edited.set("N", Vcard.escape(new_name))
+    edited.set("FN", Vcard.escape(new_name))
+    update(vcard: edited.to_s)
+  end
+
+  def add_member(contact_uid)
+    return true if card.member_uids.include?(contact_uid)
+
+    edited = card
+    index = edited.properties.rindex { |p| p.name == "X-ADDRESSBOOKSERVER-MEMBER" } ||
+      edited.properties.index { |p| p.name == "UID" } || edited.properties.size - 1
+    edited.properties.insert(index + 1, Vcard::Property.new("X-ADDRESSBOOKSERVER-MEMBER", "urn:uuid:#{contact_uid}"))
+    update(vcard: edited.to_s)
+  end
+
+  def remove_member(contact_uid)
+    edited = card
+    edited.properties.reject! { |p| p.name.in?(%w[X-ADDRESSBOOKSERVER-MEMBER MEMBER]) && p.text.strip.sub(/\Aurn:uuid:/i, "") == contact_uid }
+    update(vcard: edited.to_s)
+  end
+
   def self.store_from_device(address_book, resource_name, text, card, existing: nil)
     uid = card.uid.presence || existing&.uid || resource_name.delete_suffix(".vcf")
 

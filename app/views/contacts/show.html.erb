@@ -60,11 +60,24 @@
       <dt><%= row.label.presence || "URL" %></dt>
       <dd><%= row.value.match?(%r{\Ahttps?://}i) ? link_to(row.value, row.value, rel: "noopener noreferrer") : row.value %></dd>
     <% end %>
-    <% if (groups = @contact.groups.sorted.to_a).any? %>
-      <dt>Groups</dt>
-      <dd><%= safe_join(groups.map { |group| link_to(group.name, contacts_path(group: group.id)) }, ", ") %></dd>
-    <% end %>
     <% if editor.birthday.present? %><dt>Birthday</dt><dd><%= editor.birthday %></dd><% end %>
     <% if editor.note.present? %><dt>Notes</dt><dd class="note"><%= simple_format(editor.note) %></dd><% end %>
   </dl>
 </div>
+
+<% all_groups = @contact.address_book.groups.sorted.to_a %>
+<% if all_groups.any? %>
+  <h2>Groups</h2>
+  <%= form_with url: contact_groups_path(@contact), method: :patch, class: "stack", id: "contact_groups" do |form| %>
+    <div class="row">
+      <% member_of = @contact.groups.pluck(:id) %>
+      <% all_groups.each do |group| %>
+        <label class="row checkbox">
+          <%= check_box_tag "group_ids[]", group.id, member_of.include?(group.id), id: dom_id(group, :member) %>
+          <%= group.name %>
+        </label>
+      <% end %>
+    </div>
+    <div><%= form.submit "Save groups", class: "button" %></div>
+  <% end %>
+<% end %>

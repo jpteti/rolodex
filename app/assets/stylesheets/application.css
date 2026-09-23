@@ -247,3 +247,4 @@ legend { padding: 0; margin-bottom: 0.25rem; }
 .search__option { flex: none; gap: 0.35rem; color: var(--color-muted); font-size: 0.9rem; }
 .badge { margin-left: 0.4rem; padding: 0.05rem 0.4rem; border-radius: 999px; background: var(--color-border); color: var(--color-muted); font-size: 0.75rem; }
 .search__group { width: auto; flex: none; max-width: 12rem; }
+.checkbox { gap: 0.35rem; } .grow { flex: 1; }

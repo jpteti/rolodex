@@ -6,11 +6,25 @@
 <ul class="list" id="groups">
   <% @groups.each do |group| %>
     <li class="list__row" id="<%= dom_id(group) %>">
-      <%= link_to group.name, contacts_path(group: group.id), class: "contact-name" %>
-      <span class="muted"><%= pluralize(group.memberships.count { |membership| @active_uids.include?(membership.contact_uid) }, "contact") %></span>
+      <div>
+        <%= link_to group.name, contacts_path(group: group.id), class: "contact-name" %>
+        <div class="muted"><%= pluralize(group.memberships.count { |membership| @active_uids.include?(membership.contact_uid) }, "contact") %></div>
+      </div>
+      <div class="row">
+        <%= link_to "Rename", edit_group_path(group), class: "button" %>
+        <%= button_to "Delete", group_path(group), method: :delete, class: "button button--danger",
+              form: { data: { turbo_confirm: "Delete the group “#{group.name}”? Its contacts stay." } } %>
+      </div>
     </li>
   <% end %>
   <% if @groups.empty? %>
-    <li class="list__empty">No groups yet. Groups you create in Apple Contacts appear here.</li>
+    <li class="list__empty">No groups yet.</li>
   <% end %>
 </ul>
+
+<h2>New group</h2>
+<%= form_with model: @group, class: "row narrow" do |form| %>
+  <% if @group.errors.any? %><p class="errors"><%= @group.errors.full_messages.to_sentence %></p><% end %>
+  <%= form.text_field :name, placeholder: "Group name", "aria-label": "Group name", required: true, class: "grow" %>
+  <%= form.submit "Create group", class: "button button--primary" %>
+<% end %>
