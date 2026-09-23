@@ -10,6 +10,8 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   end
 
   setup do
+    Capybara.enable_aria_label = true
+
     # Passkeys need a secure context; localhost counts as one.
     Capybara.server_host = "localhost"
     Capybara.server_port = 3111

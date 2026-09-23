@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_052310) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_052639) do
   create_table "address_books", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "ctag", default: 0, null: false
@@ -42,8 +42,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_052310) do
     t.string "given_name"
     t.boolean "has_photo", default: false, null: false
     t.string "organization"
+    t.text "phone_digits", default: "", null: false
     t.text "phones"
     t.string "resource_name", null: false
+    t.text "search_text", default: "", null: false
     t.string "sort_key", null: false
     t.datetime "trashed_at"
     t.string "uid", null: false

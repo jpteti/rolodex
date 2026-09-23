@@ -5,4 +5,17 @@
   <%= link_to "New contact", new_contact_path, class: "button button--primary" %>
 </div>
 
-<%= render "contacts/list", contacts: @contacts, empty_message: "No contacts yet." %>
+<%= form_with url: contacts_path, method: :get, class: "row search",
+      data: { controller: "search", turbo_frame: "contact_results", turbo_action: "replace" } do |form| %>
+  <%= form.search_field :q, value: @query, placeholder: "Search name, organization, email, or phone",
+        "aria-label": "Search contacts", autocomplete: "off", data: { action: "input->search#search" } %>
+  <label class="row search__option">
+    <%= form.check_box :archived, { checked: @include_archived, data: { action: "change->search#search" } }, "1", nil %>
+    Include archived
+  </label>
+<% end %>
+
+<%= turbo_frame_tag "contact_results", target: "_top" do %>
+  <%= render "contacts/list", contacts: @contacts,
+        empty_message: @query.present? ? "No contacts match “#{@query}”." : "No contacts yet." %>
+<% end %>
