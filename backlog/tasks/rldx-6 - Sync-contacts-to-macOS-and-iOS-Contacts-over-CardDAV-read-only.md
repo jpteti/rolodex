@@ -1,10 +1,11 @@
 ---
 id: RLDX-6
 title: Sync contacts to macOS and iOS Contacts over CardDAV (read-only)
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 04:32'
+updated_date: '2026-09-23 05:09'
 labels:
   - carddav
   - stack-skeleton
@@ -41,3 +42,23 @@ This slice proves Apple client compatibility, the riskiest part of the project. 
 - [ ] #1 Manual sync verified on a physical iPhone and a Mac against the deployed server
 - [ ] #2 All PRs for this task merged to main through the stack workflow in doc-1, with bin/ci passing in GitHub Actions
 <!-- DOD:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Library check: carddav/carddav.rb gems are clients; dav4rack (2013) and dav4rack_ext (2014) are unmaintained. Hand-roll the server.
+2. URL tree: /dav/ root -> /dav/principals/<user>/ -> /dav/addressbooks/<user>/ (home) -> /dav/addressbooks/<user>/contacts/ -> <resource>.vcf. /.well-known/carddav 301s to /dav/; PROPFIND and OPTIONS on / serve the root.
+3. Dav module: property names, request parsing (prop/allprop/propname), Nokogiri multistatus builder with 200 and 404 propstats.
+4. Carddav resources (Root, Principal, Home, AddressBookCollection, ContactResource) define properties: current-user-principal, addressbook-home-set, resourcetype, getctag, getetag, supported-report-set, supported-address-data (vCard 3.0), current-user-privilege-set (read only for now).
+5. Carddav::DavController: OPTIONS (DAV: 1, 3, addressbook), PROPFIND with Depth 0/1, PROPPATCH (403 per prop), REPORT addressbook-multiget and addressbook-query, GET/HEAD with ETag and If-None-Match.
+6. Allow WebDAV methods in Puma (supported_http_methods).
+7. Request tests for each method; manual sync on a Mac and an iPhone against the deployed server.
+<!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Found while checking with curl: Puma 8 rejects PROPFIND/REPORT unless listed in supported_http_methods, and integration tests bypass Puma. config/puma.rb now lists the WebDAV methods, and test/config/puma_config_test.rb loads that file to assert it.
+Production image check (Docker): OPTIONS 200, PROPFIND 207, REPORT 207, and PROPFIND /.well-known/carddav 301 to /dav/, all through Thruster.
+bin/ci: 65 tests + 2 system tests. Device testing waits on the Fly deploy (RLDX-3).
+<!-- SECTION:NOTES:END -->

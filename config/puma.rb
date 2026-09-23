@@ -34,6 +34,9 @@ port ENV.fetch("PORT", 3000)
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
 
+# CardDAV clients use WebDAV methods, which Puma rejects unless listed.
+supported_http_methods Puma::Const::SUPPORTED_HTTP_METHODS + %w[ PROPFIND PROPPATCH REPORT MKCOL COPY MOVE LOCK UNLOCK ]
+
 # Run the Solid Queue supervisor inside of Puma for single-server deployments.
 plugin :solid_queue if ENV["SOLID_QUEUE_IN_PUMA"]
 

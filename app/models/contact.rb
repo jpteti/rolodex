@@ -1,5 +1,7 @@
 # A contact is its raw vCard (the source of truth) plus columns extracted from it for listing and search.
 class Contact < ApplicationRecord
+  MAX_VCARD_BYTES = 5.megabytes
+
   belongs_to :address_book
 
   serialize :emails, type: Array, coder: JSON
@@ -13,6 +15,8 @@ class Contact < ApplicationRecord
   after_commit :record_address_book_change
 
   scope :sorted, -> { order(:sort_key, :id) }
+  # Contacts that CardDAV clients see.
+  scope :visible_to_devices, -> { all }
 
   def card
     @card ||= Vcard::Card.parse(vcard)
