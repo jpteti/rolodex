@@ -1,0 +1,29 @@
+<% content_for :title, "Trash · Rolodex" %>
+
+<div class="row row--between">
+  <h1>Trash</h1>
+  <% if @contacts.any? %>
+    <%= button_to "Empty Trash", empty_trashed_contacts_path, method: :delete, class: "button button--danger",
+          form: { data: { turbo_confirm: "Permanently delete all #{pluralize(@contacts.size, 'contact')} in the Trash? This cannot be undone." } } %>
+  <% end %>
+</div>
+<p class="muted">Deleted contacts wait here until you restore them or delete them permanently. Nothing is removed automatically.</p>
+
+<ul class="list" id="contacts">
+  <% @contacts.each do |contact| %>
+    <li class="list__row" id="<%= dom_id(contact) %>">
+      <div>
+        <%= link_to contact.display_name, contact, class: "contact-name" %>
+        <div class="muted">Deleted <time datetime="<%= contact.trashed_at.iso8601 %>"><%= l contact.trashed_at, format: :long %></time></div>
+      </div>
+      <div class="row">
+        <%= button_to "Restore", restore_trashed_contact_path(contact), class: "button" %>
+        <%= button_to "Delete permanently", trashed_contact_path(contact), method: :delete, class: "button button--danger",
+              form: { data: { turbo_confirm: "Permanently delete #{contact.display_name}? This cannot be undone." } } %>
+      </div>
+    </li>
+  <% end %>
+  <% if @contacts.empty? %>
+    <li class="list__empty">The Trash is empty.</li>
+  <% end %>
+</ul>
