@@ -11,7 +11,10 @@
 </p>
 
 <div class="row row--between">
-  <h1><%= @contact.display_name %></h1>
+  <div class="row">
+    <%= render "contacts/avatar", contact: @contact, size: :large %>
+    <h1><%= @contact.display_name %></h1>
+  </div>
   <div class="row">
     <% if @contact.trashed? %>
       <%= button_to "Restore", restore_trashed_contact_path(@contact), class: "button" %>

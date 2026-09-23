@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_051602) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_052310) do
   create_table "address_books", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "ctag", default: 0, null: false
@@ -40,6 +40,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_051602) do
     t.string "etag", null: false
     t.string "family_name"
     t.string "given_name"
+    t.boolean "has_photo", default: false, null: false
     t.string "organization"
     t.text "phones"
     t.string "resource_name", null: false
