@@ -17,7 +17,6 @@ class PhotoSystemTest < ApplicationSystemTestCase
     click_on "← Hedy Lamarr"
     assert_selector "img.avatar--large"
     assert page.evaluate_script("document.querySelector('img.avatar--large').naturalWidth") == 512
-    take_screenshot
     click_on "← Contacts"
     assert_selector "#contacts img.avatar"
   end

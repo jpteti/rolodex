@@ -2,7 +2,10 @@ class ContactsController < ApplicationController
   before_action :set_contact, only: %i[ show edit update destroy ]
 
   def index
-    @contacts = address_book.contacts.active.sorted
+    @query = params[:q].to_s.strip
+    @include_archived = params[:archived] == "1"
+    scope = @include_archived ? address_book.contacts.untrashed : address_book.contacts.active
+    @contacts = scope.search(@query).sorted
   end
 
   def show

@@ -25,6 +25,17 @@ class Contact < ApplicationRecord
   # Contacts that CardDAV clients see. Archived and trashed contacts are hidden so devices remove them.
   scope :visible_to_devices, -> { active }
 
+  # Matches name, nickname, organization, or email ignoring case, and phone numbers ignoring formatting.
+  scope :search, ->(query) {
+    text = query.to_s.strip.downcase
+    next all if text.empty?
+
+    digits = text.gsub(/\D/, "")
+    condition = arel_table[:search_text].matches("%#{sanitize_sql_like(text)}%")
+    condition = condition.or(arel_table[:phone_digits].matches("%#{digits}%")) if digits.length >= 3
+    where(condition)
+  }
+
   def card
     @card ||= Vcard::Card.parse(vcard)
   end
@@ -112,6 +123,8 @@ class Contact < ApplicationRecord
       self.display_name = card.value("FN").presence || [ given_name, family_name ].compact.join(" ").presence ||
         organization || emails.first || phones.first || "No Name"
       self.has_photo = card["PHOTO"].present?
+      self.search_text = [ display_name, given_name, family_name, card.value("NICKNAME"), organization, *emails ].compact_blank.join(" ").downcase
+      self.phone_digits = phones.map { |phone| phone.gsub(/\D/, "") }.join(" ")
       self.sort_key = ([ family_name, given_name ].compact.join(" ").presence || organization || display_name).downcase
       self.etag = %("#{Digest::SHA256.hexdigest(vcard)[0, 32]}")
     rescue Vcard::ParseError => error
