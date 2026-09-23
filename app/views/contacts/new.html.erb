@@ -1,0 +1,33 @@
+<% content_for :title, "New contact · Rolodex" %>
+
+<p><%= link_to "← Contacts", contacts_path %></p>
+
+<h1>New contact</h1>
+
+<%= form_with model: @form, url: contacts_path, class: "stack narrow" do |form| %>
+  <% if @form.errors.any? %>
+    <ul class="errors">
+      <% @form.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+    </ul>
+  <% end %>
+
+  <label class="field"><span class="field__label">First name</span><%= form.text_field :given_name, autofocus: true %></label>
+  <label class="field"><span class="field__label">Last name</span><%= form.text_field :family_name %></label>
+  <label class="field"><span class="field__label">Organization</span><%= form.text_field :organization %></label>
+
+  <fieldset class="stack">
+    <legend class="field__label">Emails</legend>
+    <% (@form.emails + [ "" ] * 2).first([ @form.emails.size + 1, 2 ].max).each do |email| %>
+      <%= email_field_tag "contact_form[emails][]", email, "aria-label": "Email" %>
+    <% end %>
+  </fieldset>
+
+  <fieldset class="stack">
+    <legend class="field__label">Phones</legend>
+    <% (@form.phones + [ "" ] * 2).first([ @form.phones.size + 1, 2 ].max).each do |phone| %>
+      <%= telephone_field_tag "contact_form[phones][]", phone, "aria-label": "Phone" %>
+    <% end %>
+  </fieldset>
+
+  <div><%= form.submit "Create contact", class: "button button--primary" %></div>
+<% end %>

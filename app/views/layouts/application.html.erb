@@ -28,7 +28,7 @@
       <%= link_to "Rolodex", root_path, class: "site-header__brand" %>
       <% if authenticated? %>
         <nav class="site-header__nav">
-          <%= yield :nav %>
+          <%= link_to "Contacts", contacts_path %>
           <%= link_to "Passkeys", passkeys_path %>
           <%= button_to "Sign out", session_path, method: :delete, class: "button button--link" %>
         </nav>

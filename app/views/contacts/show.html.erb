@@ -1,0 +1,21 @@
+<% content_for :title, "#{@contact.display_name} · Rolodex" %>
+
+<p><%= link_to "← Contacts", contacts_path %></p>
+
+<h1><%= @contact.display_name %></h1>
+
+<div class="card">
+  <dl class="details">
+    <% if @contact.given_name %><dt>First name</dt><dd><%= @contact.given_name %></dd><% end %>
+    <% if @contact.family_name %><dt>Last name</dt><dd><%= @contact.family_name %></dd><% end %>
+    <% if @contact.organization %><dt>Organization</dt><dd><%= @contact.organization %></dd><% end %>
+    <% @contact.card.all("EMAIL").each do |email| %>
+      <dt><%= @contact.card.label_for(email) || "email" %></dt>
+      <dd><%= mail_to email.text %></dd>
+    <% end %>
+    <% @contact.card.all("TEL").each do |phone| %>
+      <dt><%= @contact.card.label_for(phone) || "phone" %></dt>
+      <dd><%= link_to phone.text, "tel:#{phone.text.gsub(/[^\d+]/, '')}" %></dd>
+    <% end %>
+  </dl>
+</div>
