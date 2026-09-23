@@ -9,6 +9,7 @@ module Carddav
 
     def href = Paths.contact(user, contact.resource_name)
     def collection? = false
+    def privileges = super + %w[ write write-content ]
 
     def properties
       super.merge(

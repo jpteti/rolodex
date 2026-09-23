@@ -45,6 +45,30 @@ class Contact < ApplicationRecord
     update!(archived_at: nil)
   end
 
+  # Stores a vCard sent by a CardDAV client, keeping the text exactly as sent.
+  # Returns { contact: } or { error:, ... }.
+  def self.store_from_device(address_book, resource_name, body, existing: nil)
+    text = body.dup.force_encoding(Encoding::UTF_8)
+    return { error: :invalid, message: "vCard is not valid UTF-8" } unless text.valid_encoding?
+
+    card = Vcard::Card.parse(text)
+    uid = card.uid.presence || existing&.uid || resource_name.delete_suffix(".vcf")
+
+    if (other = address_book.contacts.where(uid: uid).where.not(id: existing&.id).first)
+      return { error: :uid_conflict, resource_name: other.resource_name }
+    end
+    if existing.nil? && address_book.contacts.exists?(resource_name: resource_name)
+      return { error: :hidden_resource }
+    end
+
+    contact = existing || address_book.contacts.new(resource_name: resource_name)
+    contact.uid = uid
+    contact.vcard = text
+    contact.save ? { contact: contact } : { error: :invalid, message: contact.errors.full_messages.to_sentence }
+  rescue Vcard::ParseError => error
+    { error: :invalid, message: error.message }
+  end
+
   private
     def extract_fields
       card = self.card

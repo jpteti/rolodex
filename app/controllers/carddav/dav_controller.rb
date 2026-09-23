@@ -14,6 +14,7 @@ class Carddav::DavController < Carddav::BaseController
     when "PROPPATCH" then proppatch
     when "REPORT" then report
     when "GET", "HEAD" then show
+    when "PUT" then put
     else method_not_allowed
     end
   end
@@ -82,7 +83,63 @@ class Carddav::DavController < Carddav::BaseController
     end
 
     def allowed_methods
-      %w[ OPTIONS GET HEAD PROPFIND PROPPATCH REPORT ]
+      %w[ OPTIONS GET HEAD PUT PROPFIND PROPPATCH REPORT ]
+    end
+
+    # Creates or replaces a contact with the vCard in the body, honoring If-Match and If-None-Match.
+    def put
+      resource_name = put_target(request.path) or return head(:forbidden)
+      existing = current_user.address_book.contacts.visible_to_devices.find_by(resource_name: resource_name)
+
+      return head(:precondition_failed) unless put_preconditions_met?(existing)
+      return head(:unsupported_media_type) unless vcard_media_type?
+      return head(:payload_too_large) if request.raw_post.bytesize > Contact::MAX_VCARD_BYTES
+
+      result = Contact.store_from_device(current_user.address_book, resource_name, request.raw_post, existing: existing)
+      case result
+      in { contact: contact }
+        response.headers["ETag"] = contact.etag
+        head(existing ? :no_content : :created)
+      in { error: :invalid, message: }
+        render plain: "#{message}\n", status: :bad_request
+      in { error: :uid_conflict, resource_name: taken }
+        render_precondition_error "no-uid-conflict", Dav::CARDDAV, :conflict, href: Carddav::Paths.contact(current_user, taken)
+      in { error: :hidden_resource }
+        head :conflict
+      end
+    end
+
+    def put_preconditions_met?(existing)
+      if_match = request.headers["If-Match"]
+      if_none_match = request.headers["If-None-Match"]
+
+      return false if if_none_match == "*" && existing
+      return false if if_match.present? && (existing.nil? || (if_match != "*" && if_match != existing.etag))
+      true
+    end
+
+    def vcard_media_type?
+      request.media_type.in?(%w[ text/vcard text/x-vcard text/directory ]) || request.media_type.blank?
+    end
+
+    # Resolves a PUT target inside the user's address book. Returns the resource name or nil.
+    def put_target(path)
+      segments = URI::DEFAULT_PARSER.unescape(path).split("/").reject(&:empty?)
+      segments.shift if segments.first == "dav"
+
+      case segments
+      in [ "addressbooks", username, "contacts", resource_name ] if own?(username) then resource_name
+      else nil
+      end
+    end
+
+    def render_precondition_error(name, namespace, status, href: nil)
+      body = Nokogiri::XML::Builder.new(encoding: "UTF-8") do |xml|
+        xml["d"].error("xmlns:d" => Dav::DAV, "xmlns:card" => Dav::CARDDAV) do
+          Dav.element(xml, Dav.prop(namespace, name)) { xml["d"].href(href) if href }
+        end
+      end.to_xml
+      render body: body, status: status, content_type: XML_TYPE
     end
 
     def addressbook_multiget(book, root)
