@@ -187,3 +187,4 @@ legend { padding: 0; margin-bottom: 0.25rem; }
 
 .contact-name { font-weight: 600; }
 .secret { font-size: 1.1rem; letter-spacing: 0.05em; }
+.flash--archived { background: var(--color-border); }

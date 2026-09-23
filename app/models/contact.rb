@@ -15,8 +15,10 @@ class Contact < ApplicationRecord
   after_commit :record_address_book_change
 
   scope :sorted, -> { order(:sort_key, :id) }
-  # Contacts that CardDAV clients see.
-  scope :visible_to_devices, -> { all }
+  scope :archived, -> { where.not(archived_at: nil) }
+  scope :unarchived, -> { where(archived_at: nil) }
+  # Contacts that CardDAV clients see. Archived contacts are hidden so devices remove them.
+  scope :visible_to_devices, -> { unarchived }
 
   def card
     @card ||= Vcard::Card.parse(vcard)
@@ -31,6 +33,16 @@ class Contact < ApplicationRecord
   def self.build_from_fields(address_book, fields)
     uid = SecureRandom.uuid.upcase
     address_book.contacts.new(uid: uid, resource_name: "#{uid}.vcf", vcard: ContactCard.new(**fields.to_h.symbolize_keys, uid: uid).to_s)
+  end
+
+  def archived? = archived_at.present?
+
+  def archive!
+    update!(archived_at: Time.current)
+  end
+
+  def unarchive!
+    update!(archived_at: nil)
   end
 
   private
