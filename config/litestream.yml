@@ -1,0 +1,12 @@
+# Litestream replicates the primary SQLite database to S3-compatible storage (Fly.io Tigris).
+# `fly storage create` sets BUCKET_NAME, AWS_ENDPOINT_URL_S3, AWS_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY.
+# The cache, queue, and cable databases hold disposable data and are not replicated.
+dbs:
+  - path: /rails/storage/production.sqlite3
+    replica:
+      type: s3
+      bucket: ${BUCKET_NAME}
+      path: production.sqlite3
+      endpoint: ${AWS_ENDPOINT_URL_S3}
+      region: ${AWS_REGION}
+      force-path-style: true

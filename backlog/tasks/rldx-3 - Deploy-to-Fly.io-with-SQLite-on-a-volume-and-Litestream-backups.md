@@ -1,10 +1,11 @@
 ---
 id: RLDX-3
 title: Deploy to Fly.io with SQLite on a volume and Litestream backups
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 04:32'
+updated_date: '2026-09-23 05:05'
 labels:
   - infra
   - stack-skeleton
@@ -37,3 +38,21 @@ Apple Contacts sends CardDAV credentials with HTTP Basic auth on every request, 
 <!-- DOD:BEGIN -->
 - [ ] #1 All PRs for this task merged to main through the stack workflow in doc-1, with bin/ci passing in GitHub Actions
 <!-- DOD:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Dockerfile: install Litestream 0.5.17, add libssl-dev for the openssl gem, serve Thruster on 8080, keep a non-root rails user.
+2. Entrypoint: start as root to chown the Fly volume, restore production.sqlite3 from the bucket if missing (litestream restore -if-db-not-exists -if-replica-exists), db:prepare, then exec litestream replicate -exec the server as uid 1000.
+3. config/litestream.yml replicates the primary DB to Tigris using the secrets fly storage create sets.
+4. fly.toml: volume at /rails/storage, force_https, auto_stop_machines off, min_machines_running 1, /up check, Solid Queue in Puma.
+5. README: first deploy, custom domain cert, production setup link, restore steps.
+6. Verify locally with Docker + MinIO, then deploy to Fly with the user's account and domain.
+<!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Local verification (OrbStack Docker + MinIO standing in for Tigris): the image builds; the entrypoint prepared the DB and ran Puma + Solid Queue under litestream replicate; after creating a contact, deleting the container and its volume, and starting on a new empty volume, the contact came back from the replica. In the container, rolodex:setup_link printed an https URL; /dav/ over X-Forwarded-Proto http got 301 to https; over https it got 401.
+Remaining: the real Fly deploy, custom domain, and HTTPS certificate need the user's Fly account and DNS.
+<!-- SECTION:NOTES:END -->

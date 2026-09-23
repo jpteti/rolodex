@@ -1,8 +1,33 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
+# Runs as root so it can take ownership of the mounted volume, then runs everything else as the rails user.
+as_rails() { setpriv --reuid=1000 --regid=1000 --init-groups "$@"; }
+
+if [ "$(id -u)" = "0" ]; then
+  mkdir -p /rails/storage
+  chown -R rails:rails /rails/storage
 fi
 
-exec "${@}"
+run() { if [ "$(id -u)" = "0" ]; then as_rails "$@"; else "$@"; fi; }
+
+# When starting the server: restore the database from the replica if the volume is empty,
+# prepare the database, then run the server under Litestream so every write is replicated.
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  if [ -n "${BUCKET_NAME}" ]; then
+    run litestream restore -config /rails/config/litestream.yml -if-db-not-exists -if-replica-exists /rails/storage/production.sqlite3
+    run ./bin/rails db:prepare
+    exec_cmd=(litestream replicate -config /rails/config/litestream.yml -exec "${*}")
+  else
+    echo "BUCKET_NAME is not set; running without Litestream replication." >&2
+    run ./bin/rails db:prepare
+    exec_cmd=("${@}")
+  fi
+else
+  exec_cmd=("${@}")
+fi
+
+if [ "$(id -u)" = "0" ]; then
+  exec setpriv --reuid=1000 --regid=1000 --init-groups "${exec_cmd[@]}"
+else
+  exec "${exec_cmd[@]}"
+fi
