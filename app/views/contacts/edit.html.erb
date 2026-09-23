@@ -1,0 +1,6 @@
+<% content_for :title, "Edit #{@contact.display_name} · Rolodex" %>
+
+<p><%= link_to "← #{@contact.display_name}", @contact %></p>
+<h1>Edit contact</h1>
+
+<%= render "contacts/form", editor: @editor, url: contact_path(@contact), method: :patch, submit: "Save" %>

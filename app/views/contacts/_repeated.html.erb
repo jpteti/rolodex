@@ -1,0 +1,16 @@
+<%# locals: (field:, title:, item:, editor:) %>
+<fieldset class="stack" data-controller="rows" id="<%= field %>">
+  <legend class="field__label"><%= title %></legend>
+  <datalist id="labels-<%= field %>">
+    <% editor.label_suggestions(field).each do |label| %><option value="<%= label %>"><% end %>
+  </datalist>
+  <div class="stack" data-rows-target="list">
+    <% editor.public_send(field).each_with_index do |row, index| %>
+      <%= render "contacts/row", field: field, index: index, row: row, editor: editor %>
+    <% end %>
+  </div>
+  <template data-rows-target="template">
+    <%= render "contacts/row", field: field, index: "NEW_ROW", row: ContactEditor::Row.new, editor: editor %>
+  </template>
+  <div><button type="button" class="button" data-action="rows#add">Add <%= item %></button></div>
+</fieldset>

@@ -1,0 +1,39 @@
+<%# locals: (editor:, url:, method:, submit:) %>
+<%= form_with scope: :contact, url: url, method: method, class: "stack contact-form" do |form| %>
+  <% if editor.errors.any? %>
+    <ul class="errors">
+      <% editor.errors.full_messages.each do |message| %><li><%= message %></li><% end %>
+    </ul>
+  <% end %>
+
+  <fieldset class="stack">
+    <legend class="field__label">Name</legend>
+    <div class="form-grid">
+      <label class="field"><span class="field__label">Prefix</span><%= form.text_field :prefix, value: editor.prefix %></label>
+      <label class="field"><span class="field__label">First name</span><%= form.text_field :given_name, value: editor.given_name, autofocus: true %></label>
+      <label class="field"><span class="field__label">Middle name</span><%= form.text_field :middle_name, value: editor.middle_name %></label>
+      <label class="field"><span class="field__label">Last name</span><%= form.text_field :family_name, value: editor.family_name %></label>
+      <label class="field"><span class="field__label">Suffix</span><%= form.text_field :suffix, value: editor.suffix %></label>
+      <label class="field"><span class="field__label">Nickname</span><%= form.text_field :nickname, value: editor.nickname %></label>
+    </div>
+  </fieldset>
+
+  <div class="form-grid">
+    <label class="field"><span class="field__label">Organization</span><%= form.text_field :organization, value: editor.organization %></label>
+    <label class="field"><span class="field__label">Job title</span><%= form.text_field :job_title, value: editor.job_title %></label>
+  </div>
+
+  <%= render "contacts/repeated", field: :emails, title: "Emails", item: "email", editor: editor %>
+  <%= render "contacts/repeated", field: :phones, title: "Phones", item: "phone", editor: editor %>
+  <%= render "contacts/repeated", field: :addresses, title: "Addresses", item: "address", editor: editor %>
+  <%= render "contacts/repeated", field: :urls, title: "URLs", item: "URL", editor: editor %>
+
+  <label class="field narrow">
+    <span class="field__label">Birthday</span>
+    <%= form.text_field :birthday, value: editor.birthday, placeholder: "1990-05-10, or 05-10 without a year", pattern: '(\d{4}-)?\d{2}-\d{2}' %>
+  </label>
+
+  <label class="field"><span class="field__label">Notes</span><%= form.text_area :note, value: editor.note, rows: 4 %></label>
+
+  <div class="row"><%= form.submit submit, class: "button button--primary" %></div>
+<% end %>

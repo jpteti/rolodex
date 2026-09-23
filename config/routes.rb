@@ -23,7 +23,7 @@ Rails.application.routes.draw do
   match "/dav", to: "carddav/dav#serve", via: dav_verbs, as: :carddav_root
   match "/dav/*path", to: "carddav/dav#serve", via: dav_verbs, format: false
 
-  resources :contacts, only: %i[ index show new create ] do
+  resources :contacts do
     resource :archive, only: %i[ create destroy ]
   end
   get "archive", to: "archives#index", as: :archived_contacts

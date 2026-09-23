@@ -1,0 +1,21 @@
+<%# locals: (field:, index:, row:, editor:) %>
+<% name = "contact[#{field}][#{index}]" %>
+<div class="edit-row" data-row>
+  <%= hidden_field_tag "#{name}[ref]", row.ref, id: nil %>
+  <input type="text" name="<%= name %>[label]" value="<%= row.label %>" list="labels-<%= field %>" class="edit-row__label" aria-label="Label" placeholder="label">
+  <% if field == :addresses %>
+    <div class="edit-row__address">
+      <textarea name="<%= name %>[street]" rows="2" aria-label="Street" placeholder="Street"><%= row.street %></textarea>
+      <div class="edit-row__split">
+        <input type="text" name="<%= name %>[city]" value="<%= row.city %>" aria-label="City" placeholder="City">
+        <input type="text" name="<%= name %>[region]" value="<%= row.region %>" aria-label="State" placeholder="State">
+        <input type="text" name="<%= name %>[postal_code]" value="<%= row.postal_code %>" aria-label="Postal code" placeholder="Postal code">
+      </div>
+      <input type="text" name="<%= name %>[country]" value="<%= row.country %>" aria-label="Country" placeholder="Country">
+    </div>
+  <% else %>
+    <% type, label = { emails: [ "email", "Email" ], phones: [ "tel", "Phone" ], urls: [ "url", "URL" ] }.fetch(field) %>
+    <input type="<%= type %>" name="<%= name %>[value]" value="<%= row.value %>" aria-label="<%= label %>" placeholder="<%= label %>">
+  <% end %>
+  <button type="button" class="button button--link edit-row__remove" data-action="rows#remove" aria-label="Remove">Remove</button>
+</div>

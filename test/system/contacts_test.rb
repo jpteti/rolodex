@@ -8,9 +8,16 @@ class ContactsSystemTest < ApplicationSystemTestCase
     fill_in "First name", with: "Katherine"
     fill_in "Last name", with: "Johnson"
     fill_in "Organization", with: "NASA"
-    all("input[type=email]")[0].fill_in with: "kj@nasa.example"
-    all("input[type=email]")[1].fill_in with: "katherine@example.com"
-    all("input[type=tel]")[0].fill_in with: "555-0199"
+    within("#emails") do
+      click_on "Add email"
+      all("input[type=email]").last.fill_in with: "kj@nasa.example"
+      click_on "Add email"
+      all("input[type=email]").last.fill_in with: "katherine@example.com"
+    end
+    within("#phones") do
+      click_on "Add phone"
+      all("input[type=tel]").last.fill_in with: "555-0199"
+    end
     click_on "Create contact"
 
     assert_text "Contact created."

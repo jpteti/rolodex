@@ -1,24 +1,7 @@
 require "test_helper"
 
 class VcardTest < ActiveSupport::TestCase
-  APPLE_CARD = <<~VCF.gsub("\n", "\r\n")
-    BEGIN:VCARD
-    VERSION:3.0
-    PRODID:-//Apple Inc.//iPhone OS 18.0//EN
-    N:Appleseed;Johnny;;;
-    FN:Johnny Appleseed
-    ORG:Apple Inc.;Engineering
-    item1.EMAIL;type=INTERNET;type=pref:johnny@example.com
-    item1.X-ABLabel:_$!<Other>!$_
-    item2.TEL;type=CELL;type=VOICE:(555) 123-4567
-    item2.X-ABLabel:Burner
-    X-SOCIALPROFILE;type=twitter:x-apple:johnny
-    NOTE:Line one\\nLine two\\, with comma\; and semicolon
-    item3.ADR;type=HOME:;;1 Infinite Loop;Cupertino;CA;95014;USA
-    item3.X-ABADR:us
-    UID:1234-ABCD
-    END:VCARD
-  VCF
+  APPLE_CARD = File.binread(Rails.root.join("test/fixtures/files/apple_contact.vcf")).force_encoding(Encoding::UTF_8)
 
   test "parses properties with groups, parameters, and escaped values" do
     card = Vcard::Card.parse(APPLE_CARD)
@@ -35,7 +18,7 @@ class VcardTest < ActiveSupport::TestCase
   test "reads Apple custom labels" do
     card = Vcard::Card.parse(APPLE_CARD)
 
-    assert_equal "Other", card.label_for(card["EMAIL"])
+    assert_equal "other", card.label_for(card["EMAIL"])
     assert_equal "Burner", card.label_for(card["TEL"])
   end
 

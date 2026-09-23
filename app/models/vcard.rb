@@ -225,13 +225,9 @@ module Vcard
       self
     end
 
-    # The label of a property: an Apple X-ABLabel on the same group, else its first meaningful TYPE.
+    # The label of a property: an Apple X-ABLabel on the same group, else its TYPE.
     def label_for(property)
-      if property.group
-        custom = properties.find { |p| p.group&.casecmp?(property.group) && p.name == "X-ABLABEL" }
-        return custom.text.gsub(/\A_\$!<(.*)>!\$_\z/, '\1') if custom
-      end
-      (property.types - %w[internet pref voice x400]).first
+      Vcard::Label.read(self, property)
     end
 
     def to_s
