@@ -22,6 +22,29 @@ bin/dev
 
 The app listens on http://localhost:3000.
 
+## Test sync with Apple Contacts locally
+
+Apple Contacts syncs CardDAV only over HTTPS, so it cannot reach `http://localhost:3000`. Use [puma-dev](https://github.com/puma/puma-dev) as an HTTPS proxy in front of `bin/dev`:
+
+```bash
+echo 3000 > ~/.puma-dev/rolodex
+bin/dev
+```
+
+puma-dev then serves the app at `https://rolodex.test` with a certificate macOS trusts. Use proxy mode (a file holding the port) instead of a symlink: puma-dev's launcher fails on project paths that contain spaces.
+
+Add the account in macOS Contacts (Settings → Accounts → + → Other Contacts Account → CardDAV):
+
+| Field | Value |
+|---|---|
+| Account Type | Manual |
+| User Name | your Rolodex username (default `owner`) |
+| Password | an app password |
+| Server Address | `rolodex.test` |
+| Server Path | `/dav/principals/<username>/` |
+| Port | `443` |
+| Use SSL | On |
+
 ## Sign in
 
 The web UI uses passkeys and has no password login or sign-up page. To register the first passkey, or to recover after losing every passkey, print a setup link from a shell on the server:
