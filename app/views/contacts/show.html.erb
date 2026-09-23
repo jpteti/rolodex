@@ -14,7 +14,9 @@
   <h1><%= @contact.display_name %></h1>
   <div class="row">
     <% if @contact.trashed? %>
-      <%= button_to "Restore", contact_trash_path(@contact), method: :delete, class: "button" %>
+      <%= button_to "Restore", restore_trashed_contact_path(@contact), class: "button" %>
+      <%= button_to "Delete permanently", trashed_contact_path(@contact), method: :delete, class: "button button--danger",
+            form: { data: { turbo_confirm: "Permanently delete #{@contact.display_name}? This cannot be undone." } } %>
     <% elsif @contact.archived? %>
       <%= button_to "Unarchive", contact_archive_path(@contact), method: :delete, class: "button" %>
     <% else %>

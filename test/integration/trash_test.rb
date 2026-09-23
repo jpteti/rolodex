@@ -59,7 +59,7 @@ class TrashTest < ActionDispatch::IntegrationTest
     @ada.trash!
     ctag = users(:owner).address_book.reload.ctag
 
-    delete contact_trash_url(@ada)
+    post restore_trashed_contact_url(@ada)
     assert_redirected_to contact_url(@ada)
     assert_not @ada.reload.trashed?
     assert_operator users(:owner).address_book.reload.ctag, :>, ctag
