@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:15'
+updated_date: '2026-09-23 05:40'
 labels:
   - web
   - stack-lifecycle
@@ -27,10 +27,10 @@ The trash keeps contacts indefinitely, so the user needs a way to remove them fo
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 A trashed contact can be permanently deleted after a confirmation step
-- [ ] #2 Empty Trash permanently deletes every trashed contact after a confirmation step
-- [ ] #3 Permanently deleted contacts are gone from the database and cannot be restored
-- [ ] #4 Contacts outside the trash cannot be permanently deleted directly
+- [x] #1 A trashed contact can be permanently deleted after a confirmation step
+- [x] #2 Empty Trash permanently deletes every trashed contact after a confirmation step
+- [x] #3 Permanently deleted contacts are gone from the database and cannot be restored
+- [x] #4 Contacts outside the trash cannot be permanently deleted directly
 <!-- AC:END -->
 
 ## Definition of Done

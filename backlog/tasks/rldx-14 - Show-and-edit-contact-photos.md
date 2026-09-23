@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:26'
+updated_date: '2026-09-23 05:40'
 labels:
   - web
   - stack-editing
@@ -27,9 +27,9 @@ Photos set on devices already sync because the raw vCard keeps the PHOTO propert
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Contact list and detail pages show the vCard photo, with an initials placeholder when absent
-- [ ] #2 The user can upload, replace, and remove a photo in the web UI
-- [ ] #3 Uploaded photos are resized to a reasonable size before being embedded in the vCard
+- [x] #1 Contact list and detail pages show the vCard photo, with an initials placeholder when absent
+- [x] #2 The user can upload, replace, and remove a photo in the web UI
+- [x] #3 Uploaded photos are resized to a reasonable size before being embedded in the vCard
 - [ ] #4 Photos set in the web UI appear on devices, and photos set on devices appear in the web UI
 <!-- AC:END -->
 

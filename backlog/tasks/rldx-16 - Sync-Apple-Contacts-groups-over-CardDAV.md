@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:34'
+updated_date: '2026-09-23 05:40'
 labels:
   - carddav
   - web
@@ -28,10 +28,10 @@ Apple Contacts stores groups in a CardDAV address book as separate vCards with X
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 Group vCards PUT by devices are stored as groups, separate from contacts
+- [x] #1 Group vCards PUT by devices are stored as groups, separate from contacts
 - [ ] #2 Groups created or changed on one device appear on the other device
-- [ ] #3 Group vCards never appear in the web contact list
-- [ ] #4 The web UI lists groups and filters contacts by group
+- [x] #3 Group vCards never appear in the web contact list
+- [x] #4 The web UI lists groups and filters contacts by group
 <!-- AC:END -->
 
 ## Definition of Done

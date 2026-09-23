@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:36'
+updated_date: '2026-09-23 05:40'
 labels:
   - web
   - stack-groups
@@ -27,8 +27,8 @@ After groups sync from devices, the user should also be able to organize them on
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 The user can create, rename, and delete groups
-- [ ] #2 The user can add contacts to and remove contacts from groups on the contact page
+- [x] #1 The user can create, rename, and delete groups
+- [x] #2 The user can add contacts to and remove contacts from groups on the contact page
 - [ ] #3 Group changes made in the web UI appear on devices after their next refresh
 <!-- AC:END -->
 

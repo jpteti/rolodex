@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:09'
+updated_date: '2026-09-23 05:40'
 labels:
   - carddav
   - stack-skeleton
@@ -33,8 +33,8 @@ This slice proves Apple client compatibility, the riskiest part of the project. 
 - [ ] #2 Adding the account in iOS Settings the same way succeeds
 - [ ] #3 All contacts created in the web UI appear on both devices
 - [ ] #4 Editing or adding a contact in the web UI appears on the devices after their next refresh, driven by a changed getctag and ETag
-- [ ] #5 Requests without valid app-password credentials return 401 with a WWW-Authenticate Basic challenge
-- [ ] #6 Request specs cover OPTIONS, PROPFIND on principal/home/address book, addressbook-multiget REPORT, and GET
+- [x] #5 Requests without valid app-password credentials return 401 with a WWW-Authenticate Basic challenge
+- [x] #6 Request specs cover OPTIONS, PROPFIND on principal/home/address book, addressbook-multiget REPORT, and GET
 <!-- AC:END -->
 
 ## Definition of Done

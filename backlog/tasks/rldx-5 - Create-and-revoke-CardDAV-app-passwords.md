@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:00'
+updated_date: '2026-09-23 05:40'
 labels:
   - auth
   - web
@@ -29,11 +29,11 @@ Apple Contacts authenticates CardDAV accounts with a username and password over 
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 A signed-in user can create a named app password (for example iPhone) and sees the generated secret exactly once
-- [ ] #2 The app password list shows name, creation time, and last-used time, never the secret
-- [ ] #3 Revoking an app password makes the next CardDAV request with it return 401
-- [ ] #4 Secrets are stored hashed, and Basic auth compares them in constant time
-- [ ] #5 Basic auth requests over plain HTTP are refused in production
+- [x] #1 A signed-in user can create a named app password (for example iPhone) and sees the generated secret exactly once
+- [x] #2 The app password list shows name, creation time, and last-used time, never the secret
+- [x] #3 Revoking an app password makes the next CardDAV request with it return 401
+- [x] #4 Secrets are stored hashed, and Basic auth compares them in constant time
+- [x] #5 Basic auth requests over plain HTTP are refused in production
 <!-- AC:END -->
 
 ## Definition of Done

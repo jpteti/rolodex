@@ -142,6 +142,13 @@ class Contact < ApplicationRecord
         log_sync_change(removed: true, resource_name: resource_name_before_last_save)
       end
 
+      # Groups serve only visible members, so their vCards change for devices too.
+      if was_visible != visible_to_devices?
+        address_book.groups.joins(:memberships).where(group_memberships: { contact_uid: uid }).find_each do |group|
+          address_book.sync_changes.create!(resource_name: group.resource_name, removed: false)
+        end
+      end
+
       if was_visible && !visible_to_devices?
         log_sync_change(removed: true)
       elsif visible_to_devices? && (!was_visible || saved_change_to_vcard? || saved_change_to_resource_name?)

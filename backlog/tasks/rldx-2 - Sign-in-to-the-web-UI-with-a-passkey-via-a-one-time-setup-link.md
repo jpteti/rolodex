@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 04:52'
+updated_date: '2026-09-23 05:39'
 labels:
   - auth
   - web
@@ -28,12 +28,12 @@ The web UI holds every contact, so it needs a login. Decision: passkeys (WebAuth
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 A rake task creates the user if missing and prints a setup URL that expires after a fixed window (for example 15 minutes)
-- [ ] #2 Visiting the setup URL registers a passkey; reusing or visiting an expired URL shows an error and registers nothing
-- [ ] #3 Signing in with a registered passkey starts a session; signing out ends it
-- [ ] #4 Every web page except sign-in and setup redirects anonymous visitors to sign-in
-- [ ] #5 A signed-in user can register additional passkeys and remove any passkey except the last one
-- [ ] #6 Tests cover setup-link expiry, single use, and the anonymous redirect
+- [x] #1 A rake task creates the user if missing and prints a setup URL that expires after a fixed window (for example 15 minutes)
+- [x] #2 Visiting the setup URL registers a passkey; reusing or visiting an expired URL shows an error and registers nothing
+- [x] #3 Signing in with a registered passkey starts a session; signing out ends it
+- [x] #4 Every web page except sign-in and setup redirects anonymous visitors to sign-in
+- [x] #5 A signed-in user can register additional passkeys and remove any passkey except the last one
+- [x] #6 Tests cover setup-link expiry, single use, and the anonymous redirect
 <!-- AC:END -->
 
 ## Definition of Done

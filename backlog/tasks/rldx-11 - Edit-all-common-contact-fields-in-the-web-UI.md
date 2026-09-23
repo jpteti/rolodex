@@ -5,7 +5,7 @@ status: In Progress
 assignee:
   - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 05:22'
+updated_date: '2026-09-23 05:40'
 labels:
   - web
   - stack-editing
@@ -28,11 +28,11 @@ The first web form covers only name, organization, emails, and phones. Editing o
 
 ## Acceptance Criteria
 <!-- AC:BEGIN -->
-- [ ] #1 The form edits name parts, nickname, organization, job title, multiple labeled emails, phones, postal addresses, URLs, birthday, and notes
-- [ ] #2 Adding and removing repeated fields (emails, phones, addresses) works without a full page reload (Turbo/Stimulus)
-- [ ] #3 Saving preserves every vCard property the form does not display
-- [ ] #4 Apple custom labels (X-ABLabel) display and round-trip
-- [ ] #5 Delete in the web UI moves the contact to the Trash
+- [x] #1 The form edits name parts, nickname, organization, job title, multiple labeled emails, phones, postal addresses, URLs, birthday, and notes
+- [x] #2 Adding and removing repeated fields (emails, phones, addresses) works without a full page reload (Turbo/Stimulus)
+- [x] #3 Saving preserves every vCard property the form does not display
+- [x] #4 Apple custom labels (X-ABLabel) display and round-trip
+- [x] #5 Delete in the web UI moves the contact to the Trash
 - [ ] #6 Edits appear on devices after their next refresh
 <!-- AC:END -->
 
