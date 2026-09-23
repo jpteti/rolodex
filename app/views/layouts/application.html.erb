@@ -29,6 +29,7 @@
       <% if authenticated? %>
         <nav class="site-header__nav">
           <%= link_to "Contacts", contacts_path %>
+          <%= link_to "Groups", groups_path %>
           <%= link_to "Archive", archived_contacts_path %>
           <%= link_to "Trash", trashed_contacts_path %>
           <%= link_to "App passwords", app_passwords_path %>

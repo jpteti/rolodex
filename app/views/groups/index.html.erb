@@ -1,0 +1,16 @@
+<% content_for :title, "Groups · Rolodex" %>
+
+<h1>Groups</h1>
+<p class="muted">Groups sync with Apple Contacts.</p>
+
+<ul class="list" id="groups">
+  <% @groups.each do |group| %>
+    <li class="list__row" id="<%= dom_id(group) %>">
+      <%= link_to group.name, contacts_path(group: group.id), class: "contact-name" %>
+      <span class="muted"><%= pluralize(group.memberships.count { |membership| @active_uids.include?(membership.contact_uid) }, "contact") %></span>
+    </li>
+  <% end %>
+  <% if @groups.empty? %>
+    <li class="list__empty">No groups yet. Groups you create in Apple Contacts appear here.</li>
+  <% end %>
+</ul>

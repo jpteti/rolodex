@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   resources :imports, only: %i[ new create show ]
+  resources :groups, only: :index
   resources :app_passwords, only: %i[ index create destroy ]
 
   # CardDAV. Clients find the service from /.well-known/carddav (RFC 6764) or by probing "/".

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_052854) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_053217) do
   create_table "address_books", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "ctag", default: 0, null: false
@@ -57,6 +57,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_052854) do
     t.index ["address_book_id"], name: "index_contacts_on_address_book_id"
     t.index ["archived_at"], name: "index_contacts_on_archived_at"
     t.index ["trashed_at"], name: "index_contacts_on_trashed_at"
+  end
+
+  create_table "group_memberships", force: :cascade do |t|
+    t.string "contact_uid", null: false
+    t.datetime "created_at", null: false
+    t.integer "group_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contact_uid"], name: "index_group_memberships_on_contact_uid"
+    t.index ["group_id", "contact_uid"], name: "index_group_memberships_on_group_id_and_contact_uid", unique: true
+    t.index ["group_id"], name: "index_group_memberships_on_group_id"
+  end
+
+  create_table "groups", force: :cascade do |t|
+    t.integer "address_book_id", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.string "resource_name", null: false
+    t.string "uid", null: false
+    t.datetime "updated_at", null: false
+    t.text "vcard", null: false
+    t.index ["address_book_id", "resource_name"], name: "index_groups_on_address_book_id_and_resource_name", unique: true
+    t.index ["address_book_id", "uid"], name: "index_groups_on_address_book_id_and_uid", unique: true
+    t.index ["address_book_id"], name: "index_groups_on_address_book_id"
   end
 
   create_table "imports", force: :cascade do |t|
@@ -128,6 +151,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_052854) do
   add_foreign_key "address_books", "users"
   add_foreign_key "app_passwords", "users"
   add_foreign_key "contacts", "address_books"
+  add_foreign_key "group_memberships", "groups"
+  add_foreign_key "groups", "address_books"
   add_foreign_key "imports", "address_books"
   add_foreign_key "passkeys", "users"
   add_foreign_key "sessions", "users"

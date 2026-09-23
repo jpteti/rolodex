@@ -34,12 +34,12 @@ class Import < ApplicationRecord
         text = card.to_s
       end
 
-      contact = address_book.contacts.find_by(uid: card.uid)
-      if contact
-        contact.update!(vcard: text)
+      records = card.group? ? address_book.groups : address_book.contacts
+      if (record = records.find_by(uid: card.uid))
+        record.update!(vcard: text)
         increment!(:updated_count)
       else
-        address_book.contacts.create!(uid: card.uid, resource_name: resource_name_for(card.uid), vcard: text)
+        records.create!(uid: card.uid, resource_name: resource_name_for(card.uid), vcard: text)
         increment!(:created_count)
       end
     rescue Vcard::ParseError, ActiveRecord::RecordInvalid => error
@@ -49,6 +49,7 @@ class Import < ApplicationRecord
 
     def resource_name_for(uid)
       name = uid.match?(/\A[\w.-]{1,200}\z/) ? "#{uid}.vcf" : "#{SecureRandom.uuid.upcase}.vcf"
-      address_book.contacts.exists?(resource_name: name) ? "#{SecureRandom.uuid.upcase}.vcf" : name
+      taken = address_book.contacts.exists?(resource_name: name) || address_book.groups.exists?(resource_name: name)
+      taken ? "#{SecureRandom.uuid.upcase}.vcf" : name
     end
 end
