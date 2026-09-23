@@ -2,7 +2,7 @@ class ContactsController < ApplicationController
   before_action :set_contact, only: :show
 
   def index
-    @contacts = address_book.contacts.unarchived.sorted
+    @contacts = address_book.contacts.active.sorted
   end
 
   def show

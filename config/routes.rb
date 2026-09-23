@@ -25,8 +25,10 @@ Rails.application.routes.draw do
 
   resources :contacts, only: %i[ index show new create ] do
     resource :archive, only: %i[ create destroy ]
+    resource :trash, only: :destroy
   end
   get "archive", to: "archives#index", as: :archived_contacts
+  get "trash", to: "trashes#index", as: :trashed_contacts
 
   root "contacts#index"
 end

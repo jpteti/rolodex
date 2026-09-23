@@ -1,0 +1,19 @@
+<% content_for :title, "Trash · Rolodex" %>
+
+<h1>Trash</h1>
+<p class="muted">Contacts deleted on your devices wait here until you restore them. Nothing is removed automatically.</p>
+
+<ul class="list" id="contacts">
+  <% @contacts.each do |contact| %>
+    <li class="list__row" id="<%= dom_id(contact) %>">
+      <div>
+        <%= link_to contact.display_name, contact, class: "contact-name" %>
+        <div class="muted">Deleted <time datetime="<%= contact.trashed_at.iso8601 %>"><%= l contact.trashed_at, format: :long %></time></div>
+      </div>
+      <%= button_to "Restore", contact_trash_path(contact), method: :delete, class: "button" %>
+    </li>
+  <% end %>
+  <% if @contacts.empty? %>
+    <li class="list__empty">The Trash is empty.</li>
+  <% end %>
+</ul>
