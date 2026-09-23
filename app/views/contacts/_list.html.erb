@@ -1,0 +1,17 @@
+<%# locals: (contacts:, empty_message:) %>
+<ul class="list" id="contacts">
+  <% contacts.each do |contact| %>
+    <li class="list__row" id="<%= dom_id(contact) %>">
+      <div>
+        <%= link_to contact.display_name, contact, class: "contact-name" %>
+        <% if contact.organization.present? && contact.organization != contact.display_name %>
+          <div class="muted"><%= contact.organization %></div>
+        <% end %>
+      </div>
+      <div class="muted"><%= contact.emails.first || contact.phones.first %></div>
+    </li>
+  <% end %>
+  <% if contacts.empty? %>
+    <li class="list__empty"><%= empty_message %></li>
+  <% end %>
+</ul>

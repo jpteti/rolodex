@@ -1,0 +1,6 @@
+<% content_for :title, "Archive · Rolodex" %>
+
+<h1>Archive</h1>
+<p class="muted">Archived contacts stay in Rolodex but are removed from your devices.</p>
+
+<%= render "contacts/list", contacts: @contacts, empty_message: "No archived contacts." %>

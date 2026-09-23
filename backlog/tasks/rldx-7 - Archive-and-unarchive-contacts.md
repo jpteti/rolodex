@@ -1,10 +1,11 @@
 ---
 id: RLDX-7
 title: Archive and unarchive contacts
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 04:32'
+updated_date: '2026-09-23 05:11'
 labels:
   - web
   - carddav
@@ -38,3 +39,18 @@ The core requirement beyond sync: keep contacts the user no longer wants on thei
 <!-- DOD:BEGIN -->
 - [ ] #1 All PRs for this task merged to main through the stack workflow in doc-1, with bin/ci passing in GitHub Actions
 <!-- DOD:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Add contacts.archived_at with archived/unarchived scopes; visible_to_devices = unarchived, so every CardDAV response (PROPFIND, multiget, GET) drops archived contacts.
+2. Archive/Unarchive buttons on the contact page (ArchivesController create/destroy); the ctag bumps on the update.
+3. The main list shows unarchived contacts; /archive lists archived ones; archived contacts keep their detail page and raw vCard.
+4. Integration tests for web and CardDAV behavior; device check after deploy.
+<!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Verified with bin/ci (69 tests): archive removes the contact from the main list and adds it to /archive, CardDAV PROPFIND omits it, multiget returns 404, GET returns 404, and getctag increases. Unarchive reverses each. Device checks (AC 3, 4) wait on the deploy.
+<!-- SECTION:NOTES:END -->

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_045840) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_051018) do
   create_table "address_books", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "ctag", default: 0, null: false
@@ -33,6 +33,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_045840) do
 
   create_table "contacts", force: :cascade do |t|
     t.integer "address_book_id", null: false
+    t.datetime "archived_at"
     t.datetime "created_at", null: false
     t.string "display_name", null: false
     t.text "emails"
@@ -50,6 +51,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_045840) do
     t.index ["address_book_id", "sort_key"], name: "index_contacts_on_address_book_id_and_sort_key"
     t.index ["address_book_id", "uid"], name: "index_contacts_on_address_book_id_and_uid", unique: true
     t.index ["address_book_id"], name: "index_contacts_on_address_book_id"
+    t.index ["archived_at"], name: "index_contacts_on_archived_at"
   end
 
   create_table "passkeys", force: :cascade do |t|

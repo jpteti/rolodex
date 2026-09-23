@@ -1,8 +1,21 @@
 <% content_for :title, "#{@contact.display_name} · Rolodex" %>
 
-<p><%= link_to "← Contacts", contacts_path %></p>
+<p><%= @contact.archived? ? link_to("← Archive", archived_contacts_path) : link_to("← Contacts", contacts_path) %></p>
 
-<h1><%= @contact.display_name %></h1>
+<div class="row row--between">
+  <h1><%= @contact.display_name %></h1>
+  <div class="row">
+    <% if @contact.archived? %>
+      <%= button_to "Unarchive", contact_archive_path(@contact), method: :delete, class: "button" %>
+    <% else %>
+      <%= button_to "Archive", contact_archive_path(@contact), class: "button" %>
+    <% end %>
+  </div>
+</div>
+
+<% if @contact.archived? %>
+  <p class="flash flash--archived">Archived <%= l @contact.archived_at, format: :long %>. This contact is hidden from your devices.</p>
+<% end %>
 
 <div class="card">
   <dl class="details">
