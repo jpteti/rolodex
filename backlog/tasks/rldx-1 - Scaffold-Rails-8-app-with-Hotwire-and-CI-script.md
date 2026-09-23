@@ -1,10 +1,11 @@
 ---
 id: RLDX-1
 title: Scaffold Rails 8 app with Hotwire and CI script
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@claude'
 created_date: '2026-09-23 04:29'
-updated_date: '2026-09-23 04:32'
+updated_date: '2026-09-23 04:40'
 labels:
   - infra
   - stack-skeleton
