@@ -1,0 +1,29 @@
+name: CI
+
+# Runs on every pull request, whatever its base branch, so each layer of a stack is checked.
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    env:
+      RUBOCOP_CACHE_ROOT: tmp/rubocop
+    steps:
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y libvips sqlite3
+
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Run bin/ci
+        env:
+          RAILS_ENV: test
+        run: bin/ci
