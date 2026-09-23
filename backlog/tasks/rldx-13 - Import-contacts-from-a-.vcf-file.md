@@ -1,10 +1,11 @@
 ---
 id: RLDX-13
 title: Import contacts from a .vcf file
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 04:32'
+updated_date: '2026-09-23 05:31'
 labels:
   - web
   - stack-web
@@ -37,3 +38,21 @@ iOS does not copy existing iCloud contacts into a newly added CardDAV account, s
 <!-- DOD:BEGIN -->
 - [ ] #1 All PRs for this task merged to main through the stack workflow in doc-1, with bin/ci passing in GitHub Actions
 <!-- DOD:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Import model (filename, raw source, status, created/updated counts, JSON failures) and ImportJob; the upload request stores the file and enqueues the job, so large exports never block the request.
+2. Vcard.split walks raw lines so each card keeps its original folding (BEGIN/END lines are never folded), normalized to CRLF.
+3. Per card: a matching UID updates that contact; otherwise create one with resource name <UID>.vcf (or a UUID when the UID is not path-safe); a missing UID gets a generated one written into the card. Parse errors and invalid UTF-8 are recorded per card with a reason.
+4. /imports/:id shows status and counts and refreshes every 2 seconds until the import finishes; the source is cleared when done.
+5. Integration tests, plus a timing run on a large synthetic export.
+<!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Timing (local, rails runner): 2000 cards with 20 KB photos each (55.9 MB) imported in 34.7 s in the job, 0 failures. The request itself only stores the file and enqueues the job.
+Verified with bin/ci (137 tests): 5-card file gives created 3 / updated 1 / failed 1 with the reason; the Curie card is stored byte for byte, including the folded PHOTO; the UID match updates instead of duplicating; the no-UID card gets a generated UID inside its vCard; re-importing updates.
+Also removed two empty generated model test stubs.
+<!-- SECTION:NOTES:END -->

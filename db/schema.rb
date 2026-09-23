@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_052639) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_052854) do
   create_table "address_books", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "ctag", default: 0, null: false
@@ -57,6 +57,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_052639) do
     t.index ["address_book_id"], name: "index_contacts_on_address_book_id"
     t.index ["archived_at"], name: "index_contacts_on_archived_at"
     t.index ["trashed_at"], name: "index_contacts_on_trashed_at"
+  end
+
+  create_table "imports", force: :cascade do |t|
+    t.integer "address_book_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "created_count", default: 0, null: false
+    t.text "failures", default: "[]", null: false
+    t.string "filename", null: false
+    t.datetime "finished_at"
+    t.text "source", null: false
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.integer "updated_count", default: 0, null: false
+    t.index ["address_book_id"], name: "index_imports_on_address_book_id"
   end
 
   create_table "passkeys", force: :cascade do |t|
@@ -114,6 +128,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_052639) do
   add_foreign_key "address_books", "users"
   add_foreign_key "app_passwords", "users"
   add_foreign_key "contacts", "address_books"
+  add_foreign_key "imports", "address_books"
   add_foreign_key "passkeys", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "setup_links", "users"

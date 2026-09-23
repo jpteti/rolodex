@@ -5,17 +5,19 @@ module Vcard
 
   CRLF = "\r\n".freeze
 
-  # Splits text that holds one or more vCards. Returns the raw text of each card.
+  # Splits text that holds one or more vCards. Returns the raw text of each card with its line folding kept
+  # and CRLF line endings. BEGIN and END lines are too short to be folded, so raw lines mark the boundaries.
   def self.split(text)
     cards = []
     current = nil
 
-    unfold(text).each do |line|
-      if line.match?(/\ABEGIN:VCARD\z/i)
-        current = [ line ]
+    text.to_s.sub(/\A\uFEFF/, "").split(/\r?\n/).each do |line|
+      if line.match?(/\ABEGIN:VCARD\s*\z/i)
+        current = [ line.strip ]
       elsif current
         current << line
-        if line.match?(/\AEND:VCARD\z/i)
+        if line.match?(/\AEND:VCARD\s*\z/i)
+          current[-1] = line.strip
           cards << current.join(CRLF) + CRLF
           current = nil
         end

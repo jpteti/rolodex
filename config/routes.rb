@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  resources :imports, only: %i[ new create show ]
   resources :app_passwords, only: %i[ index create destroy ]
 
   # CardDAV. Clients find the service from /.well-known/carddav (RFC 6764) or by probing "/".
