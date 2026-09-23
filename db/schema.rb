@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_051018) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_051321) do
   create_table "address_books", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "ctag", default: 0, null: false
@@ -44,6 +44,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_051018) do
     t.text "phones"
     t.string "resource_name", null: false
     t.string "sort_key", null: false
+    t.datetime "trashed_at"
     t.string "uid", null: false
     t.datetime "updated_at", null: false
     t.text "vcard", null: false
@@ -52,6 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_051018) do
     t.index ["address_book_id", "uid"], name: "index_contacts_on_address_book_id_and_uid", unique: true
     t.index ["address_book_id"], name: "index_contacts_on_address_book_id"
     t.index ["archived_at"], name: "index_contacts_on_archived_at"
+    t.index ["trashed_at"], name: "index_contacts_on_trashed_at"
   end
 
   create_table "passkeys", force: :cascade do |t|

@@ -15,10 +15,12 @@ class Contact < ApplicationRecord
   after_commit :record_address_book_change
 
   scope :sorted, -> { order(:sort_key, :id) }
-  scope :archived, -> { where.not(archived_at: nil) }
-  scope :unarchived, -> { where(archived_at: nil) }
-  # Contacts that CardDAV clients see. Archived contacts are hidden so devices remove them.
-  scope :visible_to_devices, -> { unarchived }
+  scope :trashed, -> { where.not(trashed_at: nil) }
+  scope :untrashed, -> { where(trashed_at: nil) }
+  scope :active, -> { untrashed.where(archived_at: nil) }
+  scope :archived, -> { untrashed.where.not(archived_at: nil) }
+  # Contacts that CardDAV clients see. Archived and trashed contacts are hidden so devices remove them.
+  scope :visible_to_devices, -> { active }
 
   def card
     @card ||= Vcard::Card.parse(vcard)
@@ -43,6 +45,17 @@ class Contact < ApplicationRecord
 
   def unarchive!
     update!(archived_at: nil)
+  end
+
+  def trashed? = trashed_at.present?
+
+  def trash!
+    update!(trashed_at: Time.current)
+  end
+
+  # Returns the contact to where it was before it was trashed: the main list, or the Archive.
+  def restore!
+    update!(trashed_at: nil)
   end
 
   # Stores a vCard sent by a CardDAV client, keeping the text exactly as sent.

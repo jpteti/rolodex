@@ -15,6 +15,7 @@ class Carddav::DavController < Carddav::BaseController
     when "REPORT" then report
     when "GET", "HEAD" then show
     when "PUT" then put
+    when "DELETE" then delete
     else method_not_allowed
     end
   end
@@ -83,7 +84,7 @@ class Carddav::DavController < Carddav::BaseController
     end
 
     def allowed_methods
-      %w[ OPTIONS GET HEAD PUT PROPFIND PROPPATCH REPORT ]
+      %w[ OPTIONS GET HEAD PUT DELETE PROPFIND PROPPATCH REPORT ]
     end
 
     # Creates or replaces a contact with the vCard in the body, honoring If-Match and If-None-Match.
@@ -107,6 +108,18 @@ class Carddav::DavController < Carddav::BaseController
       in { error: :hidden_resource }
         head :conflict
       end
+    end
+
+    # Deleting on a device moves the contact to the Trash. Archived contacts are invisible to devices, so 404.
+    def delete
+      resource = resolve(request.path)
+      return head(:not_found) unless resource.is_a?(Carddav::ContactResource)
+
+      if_match = request.headers["If-Match"]
+      return head(:precondition_failed) if if_match.present? && if_match != "*" && if_match != resource.contact.etag
+
+      resource.contact.trash!
+      head :no_content
     end
 
     def put_preconditions_met?(existing)
