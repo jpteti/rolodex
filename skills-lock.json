@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "skills": {
+    "challenge": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/challenge/SKILL.md",
+      "computedHash": "caceac30f171712c13ad0409578d1fca8555ad74dc1826724df40f90efa4f0af"
+    },
+    "explain": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/explain/SKILL.md",
+      "computedHash": "7583d6f659c610ceb0a8ea56c388bcf9f593e163ea713e4ae37c0909f0466639"
+    },
+    "feature-dev": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/feature-dev/SKILL.md",
+      "computedHash": "b2802432941d3f2a476e33953e669573978edeb2d1142cfbc9d65137a51c9efb"
+    },
+    "git-commit": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/git-commit/SKILL.md",
+      "computedHash": "869082d6236ec9e231865581d23c10efdd47836ad7269f91bf9aff3e7451e223"
+    },
+    "hard-news": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/hard-news/SKILL.md",
+      "computedHash": "bcdacafa94593a88221d12f51ca0967a43545d643fa8cf8236f7bb1ef7c036d1"
+    },
+    "offboard": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/offboard/SKILL.md",
+      "computedHash": "4abfec55fb9d74ba8e37f48c11b67013bae4a6048b5b2b45580ba9a18c5c4852"
+    },
+    "prior-art": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/prior-art/SKILL.md",
+      "computedHash": "a46f5b498a3f8d548ca8a2fff8e209d0f4fb688408b71b0d9767ceba5174ad57"
+    },
+    "rubber-duck": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/rubber-duck/SKILL.md",
+      "computedHash": "28e9f680461e807b54e29fd37fff10d85292a23e1b5807cef589d9a8b3130eb5"
+    },
+    "slice": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/slice/SKILL.md",
+      "computedHash": "e3165305d11163b40e18d9f15caa54468359a0fab242cb85e879b402ebd52480"
+    },
+    "socratic-review": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/socratic-review/SKILL.md",
+      "computedHash": "a839960da1d930161cdacda67df7b823a5a25d3e898ef0ae56c40c990ee36054"
+    },
+    "standup": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/standup/SKILL.md",
+      "computedHash": "d7d8937dc625ad563ce0314e7527cb61eac6704a8b9cd4e3312bcb31377871f3"
+    },
+    "test-driven-development": {
+      "source": "thoughtbot/rails-consultant",
+      "sourceType": "github",
+      "skillPath": "skills/test-driven-development/SKILL.md",
+      "computedHash": "b2e21500f45e92a9a5ed0d0d0736b850d08ab7b1c2a552097d72f5f0eef14970"
+    }
+  }
+}
