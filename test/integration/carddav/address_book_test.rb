@@ -70,7 +70,7 @@ class Carddav::AddressBookTest < ActionDispatch::IntegrationTest
   end
 
   test "an unsupported REPORT is a 403 supported-report error" do
-    dav :report, BOOK, body: %(<d:sync-collection xmlns:d="DAV:"><d:sync-token/></d:sync-collection>)
+    dav :report, BOOK, body: %(<d:expand-property xmlns:d="DAV:"/>)
     assert_response :forbidden
     assert Nokogiri::XML(response.body).at_xpath("//d:error/d:supported-report", dav_ns)
   end

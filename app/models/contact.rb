@@ -12,6 +12,9 @@ class Contact < ApplicationRecord
   validates :vcard, :display_name, presence: true
 
   before_validation :extract_fields, if: :vcard_changed?
+  after_create :log_sync_change_on_create
+  after_update :log_sync_change_on_update
+  after_destroy :log_sync_change_on_destroy
   after_commit :record_address_book_change
 
   scope :sorted, -> { order(:sort_key, :id) }
@@ -38,6 +41,8 @@ class Contact < ApplicationRecord
   end
 
   def archived? = archived_at.present?
+
+  def visible_to_devices? = archived_at.nil? && trashed_at.nil?
 
   def archive!
     update!(archived_at: Time.current)
@@ -98,6 +103,32 @@ class Contact < ApplicationRecord
       self.etag = %("#{Digest::SHA256.hexdigest(vcard)[0, 32]}")
     rescue Vcard::ParseError => error
       errors.add(:vcard, error.message)
+    end
+
+    def log_sync_change(removed:, resource_name: self.resource_name)
+      address_book.sync_changes.create!(resource_name: resource_name, removed: removed)
+    end
+
+    def log_sync_change_on_create
+      log_sync_change(removed: false) if visible_to_devices?
+    end
+
+    def log_sync_change_on_update
+      was_visible = archived_at_before_last_save.nil? && trashed_at_before_last_save.nil?
+
+      if saved_change_to_resource_name? && was_visible
+        log_sync_change(removed: true, resource_name: resource_name_before_last_save)
+      end
+
+      if was_visible && !visible_to_devices?
+        log_sync_change(removed: true)
+      elsif visible_to_devices? && (!was_visible || saved_change_to_vcard? || saved_change_to_resource_name?)
+        log_sync_change(removed: false)
+      end
+    end
+
+    def log_sync_change_on_destroy
+      log_sync_change(removed: true) if visible_to_devices?
     end
 
     def record_address_book_change

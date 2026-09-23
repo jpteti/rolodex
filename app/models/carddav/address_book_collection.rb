@@ -8,12 +8,15 @@ module Carddav
 
     def children = contacts.map { |contact| ContactResource.new(user, contact) }
 
-    def reports = [ Dav.prop(Dav::CARDDAV, "addressbook-multiget"), Dav.prop(Dav::CARDDAV, "addressbook-query") ]
+    def reports
+      [ Dav.prop(Dav::CARDDAV, "addressbook-multiget"), Dav.prop(Dav::CARDDAV, "addressbook-query"), Dav.prop(Dav::DAV, "sync-collection") ]
+    end
 
     def properties
       super.merge(
         Dav.prop(Dav::DAV, "displayname") => ->(xml) { xml.text address_book.name },
         Dav.prop(Dav::CALENDARSERVER, "getctag") => ->(xml) { xml.text ctag },
+        Dav.prop(Dav::DAV, "sync-token") => ->(xml) { xml.text address_book.sync_token },
         Dav.prop(Dav::CARDDAV, "addressbook-description") => ->(xml) { xml.text "Rolodex contacts" },
         Dav.prop(Dav::CARDDAV, "supported-address-data") => ->(xml) {
           xml["card"].send(:"address-data-type", "content-type" => "text/vcard", "version" => "3.0")
