@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_045549) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_045840) do
   create_table "address_books", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "ctag", default: 0, null: false
@@ -18,6 +18,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_045549) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_address_books_on_user_id", unique: true
+  end
+
+  create_table "app_passwords", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "last_used_at"
+    t.string "name", null: false
+    t.string "secret_digest", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["secret_digest"], name: "index_app_passwords_on_secret_digest", unique: true
+    t.index ["user_id"], name: "index_app_passwords_on_user_id"
   end
 
   create_table "contacts", force: :cascade do |t|
@@ -84,6 +95,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_045549) do
   end
 
   add_foreign_key "address_books", "users"
+  add_foreign_key "app_passwords", "users"
   add_foreign_key "contacts", "address_books"
   add_foreign_key "passkeys", "users"
   add_foreign_key "sessions", "users"

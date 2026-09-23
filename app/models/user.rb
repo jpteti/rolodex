@@ -3,6 +3,7 @@ class User < ApplicationRecord
   has_many :setup_links, dependent: :destroy
   has_many :sessions, dependent: :destroy
   has_one :address_book, dependent: :destroy
+  has_many :app_passwords, dependent: :destroy
 
   validates :username, presence: true, uniqueness: true
 
