@@ -1,10 +1,11 @@
 ---
 id: RLDX-2
 title: Sign in to the web UI with a passkey via a one-time setup link
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 04:32'
+updated_date: '2026-09-23 04:45'
 labels:
   - auth
   - web

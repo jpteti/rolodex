@@ -1,0 +1,23 @@
+<% content_for :title, "Passkeys · Rolodex" %>
+
+<h1>Passkeys</h1>
+
+<ul class="list">
+  <% @passkeys.each do |passkey| %>
+    <li class="list__row" id="<%= dom_id(passkey) %>">
+      <div>
+        <strong><%= passkey.name %></strong>
+        <div class="muted">
+          Added <%= l passkey.created_at, format: :long %> ·
+          <%= passkey.last_used_at ? "last used #{time_ago_in_words(passkey.last_used_at)} ago" : "never used to sign in" %>
+        </div>
+      </div>
+      <% unless passkey.last? %>
+        <%= button_to "Remove", passkey_path(passkey), method: :delete, class: "button button--danger", form: { data: { turbo_confirm: "Remove the passkey “#{passkey.name}”?" } } %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
+
+<h2>Add a passkey</h2>
+<%= render "shared/passkey_button", mode: "register", options_url: options_passkeys_path, submit_url: passkeys_path, label: "Add passkey", name_field: true %>

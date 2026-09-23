@@ -1,0 +1,7 @@
+<% content_for :title, "Sign in · Rolodex" %>
+
+<section class="narrow">
+  <h1>Sign in</h1>
+  <p class="muted">Use the passkey you registered for Rolodex.</p>
+  <%= render "shared/passkey_button", mode: "authenticate", options_url: options_session_path, submit_url: session_path, label: "Sign in with a passkey" %>
+</section>
