@@ -17,8 +17,16 @@ class SetupsController < ApplicationController
 
     if passkey && @setup_link.redeem!
       passkey.save!
-      start_new_session_for @setup_link.user
-      render json: { redirect_to: root_url }
+      
+      session_creation_result = SessionCreator.new.create_session(user: @setup_link.user, request:)
+      
+      if session_creation_result.created?
+        remember_session(session_creation_result.session)
+        # start_new_session_for @setup_link.user
+        render json: { redirect_to: root_url }
+      else
+        render json: { error: "An unknown error occurred." }, status: :unprocessable_content
+      end
     else
       render json: { error: "The passkey could not be registered." }, status: :unprocessable_content
     end

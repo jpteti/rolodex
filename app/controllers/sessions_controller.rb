@@ -14,15 +14,28 @@ class SessionsController < ApplicationController
 
   def create
     if (passkey = verified_passkey_from_assertion)
-      start_new_session_for passkey.user
-      render json: { redirect_to: after_authentication_url }
+      result = SessionCreator.new.create_session(user: passkey.user, request:)
+      
+      if result.created?
+        remember_session(result.session)
+        # start_new_session_for passkey.user
+        render json: { redirect_to: after_authentication_url }
+      else
+        render json: { error: "Unknown error occurred." }, status: :unprocessable_content
+      end
     else
       render json: { error: "That passkey was not recognized." }, status: :unprocessable_content
     end
   end
 
   def destroy
-    terminate_session
-    redirect_to new_session_path, status: :see_other, notice: "Signed out."
+    result = SessionTerminator.new.terminate_session(Current.session)
+    
+    if result.terminated?
+      forget_session
+      redirect_to new_session_path, status: :see_other, notice: "Signed out."
+    else
+      redirect_to root_path, error: "Could not sign you out."
+    end
   end
 end
