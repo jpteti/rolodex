@@ -5,6 +5,9 @@ class ContactsController < ApplicationController
     @query = params[:q].to_s.strip
     @include_archived = params[:archived] == "1"
     scope = @include_archived ? address_book.contacts.untrashed : address_book.contacts.active
+    @groups = address_book.groups.sorted
+    @group = @groups.find { |group| group.id.to_s == params[:group] }
+    scope = scope.where(uid: @group.member_uids) if @group
     @contacts = scope.search(@query).sorted
   end
 

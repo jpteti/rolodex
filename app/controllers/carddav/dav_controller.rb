@@ -69,12 +69,12 @@ class Carddav::DavController < Carddav::BaseController
       resource = resolve(request.path) or return head(:not_found)
       return render(plain: "Rolodex CardDAV\n") if resource.collection?
 
-      contact = resource.contact
-      response.headers["ETag"] = contact.etag
-      response.headers["Last-Modified"] = contact.updated_at.httpdate
-      return head(:not_modified) if request.headers["If-None-Match"] == contact.etag
+      record = resource.record
+      response.headers["ETag"] = record.etag
+      response.headers["Last-Modified"] = record.updated_at.httpdate
+      return head(:not_modified) if request.headers["If-None-Match"] == record.etag
 
-      send_data contact.vcard, type: "text/vcard; charset=utf-8", disposition: :inline
+      send_data record.served_vcard, type: "text/vcard; charset=utf-8", disposition: :inline
     end
 
     def method_not_allowed
@@ -89,35 +89,37 @@ class Carddav::DavController < Carddav::BaseController
     # Creates or replaces a contact with the vCard in the body, honoring If-Match and If-None-Match.
     def put
       resource_name = put_target(request.path) or return head(:forbidden)
-      existing = current_user.address_book.contacts.visible_to_devices.find_by(resource_name: resource_name)
+      existing = current_user.address_book.device_resource(resource_name)
 
       return head(:precondition_failed) unless put_preconditions_met?(existing)
       return head(:unsupported_media_type) unless vcard_media_type?
       return head(:payload_too_large) if request.raw_post.bytesize > Contact::MAX_VCARD_BYTES
 
-      result = Contact.store_from_device(current_user.address_book, resource_name, request.raw_post, existing: existing)
+      result = current_user.address_book.store_from_device(resource_name, request.raw_post, existing: existing)
       case result
-      in { contact: contact }
-        response.headers["ETag"] = contact.etag
+      in { record: }
+        response.headers["ETag"] = record.etag
         head(existing ? :no_content : :created)
       in { error: :invalid, message: }
         render plain: "#{message}\n", status: :bad_request
       in { error: :uid_conflict, resource_name: taken }
-        render_precondition_error "no-uid-conflict", Dav::CARDDAV, :conflict, href: Carddav::Paths.contact(current_user, taken)
+        render_precondition_error "no-uid-conflict", Dav::CARDDAV, :conflict, href: Carddav::Paths.card(current_user, taken)
       in { error: :hidden_resource }
         head :conflict
       end
     end
 
-    # Deleting on a device moves the contact to the Trash. Archived contacts are invisible to devices, so 404.
+    # Deleting a contact on a device moves it to the Trash; deleting a group removes it.
+    # Archived contacts are invisible to devices, so 404.
     def delete
       resource = resolve(request.path)
-      return head(:not_found) unless resource.is_a?(Carddav::ContactResource)
+      return head(:not_found) unless resource.is_a?(Carddav::CardResource)
 
+      record = resource.record
       if_match = request.headers["If-Match"]
-      return head(:precondition_failed) if if_match.present? && if_match != "*" && if_match != resource.contact.etag
+      return head(:precondition_failed) if if_match.present? && if_match != "*" && if_match != record.etag
 
-      resource.contact.trash!
+      record.is_a?(Contact) ? record.trash! : record.destroy!
       head :no_content
     end
 
@@ -159,9 +161,9 @@ class Carddav::DavController < Carddav::BaseController
       multistatus = Dav::Multistatus.new
 
       root.xpath("d:href", "d" => Dav::DAV).each do |href|
-        contact = contact_for_href(book, href.text)
-        if contact
-          add_properties(multistatus, Carddav::ContactResource.new(current_user, contact), requested)
+        record = record_for_href(href.text)
+        if record
+          add_properties(multistatus, Carddav::CardResource.new(current_user, record), requested)
         else
           multistatus.add_status(href.text, "HTTP/1.1 404 Not Found")
         end
@@ -188,12 +190,13 @@ class Carddav::DavController < Carddav::BaseController
       if result[:changes].nil?
         book.children.each { |child| add_properties(multistatus, child, requested) }
       else
-        visible = book.contacts.where(resource_name: result[:changes].keys).index_by(&:resource_name)
+        visible = book.address_book.contacts.visible_to_devices.where(resource_name: result[:changes].keys).index_by(&:resource_name)
+        visible.merge!(book.address_book.groups.where(resource_name: result[:changes].keys).index_by(&:resource_name))
         result[:changes].each_key do |resource_name|
-          if (contact = visible[resource_name])
-            add_properties(multistatus, Carddav::ContactResource.new(current_user, contact), requested)
+          if (record = visible[resource_name])
+            add_properties(multistatus, Carddav::CardResource.new(current_user, record), requested)
           else
-            multistatus.add_status(Carddav::Paths.contact(current_user, resource_name), "HTTP/1.1 404 Not Found")
+            multistatus.add_status(Carddav::Paths.card(current_user, resource_name), "HTTP/1.1 404 Not Found")
           end
         end
       end
@@ -244,16 +247,16 @@ class Carddav::DavController < Carddav::BaseController
       in [ "addressbooks", username ] if own?(username) then Carddav::Home.new(current_user)
       in [ "addressbooks", username, "contacts" ] if own?(username) then Carddav::AddressBookCollection.new(current_user)
       in [ "addressbooks", username, "contacts", resource_name ] if own?(username)
-        contact = current_user.address_book.contacts.visible_to_devices.find_by(resource_name: resource_name)
-        Carddav::ContactResource.new(current_user, contact) if contact
+        record = current_user.address_book.device_resource(resource_name)
+        Carddav::CardResource.new(current_user, record) if record
       else nil
       end
     end
 
-    def contact_for_href(book, href)
+    def record_for_href(href)
       path = URI.parse(href).path rescue href
       resource = resolve(path)
-      resource.contact if resource.is_a?(Carddav::ContactResource)
+      resource.record if resource.is_a?(Carddav::CardResource)
     end
 
     def own?(username)

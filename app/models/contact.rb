@@ -56,6 +56,11 @@ class Contact < ApplicationRecord
     address_book.contacts.new(uid: uid, resource_name: "#{uid}.vcf", vcard: ContactCard.new(**fields.to_h.symbolize_keys, uid: uid).to_s)
   end
 
+  # The vCard served to devices.
+  def served_vcard = vcard
+
+  def groups = address_book.groups.joins(:memberships).where(group_memberships: { contact_uid: uid })
+
   def photo = ContactPhoto.read(card)
 
   def initials
@@ -86,28 +91,19 @@ class Contact < ApplicationRecord
     update!(trashed_at: nil)
   end
 
-  # Stores a vCard sent by a CardDAV client, keeping the text exactly as sent.
-  # Returns { contact: } or { error:, ... }.
-  def self.store_from_device(address_book, resource_name, body, existing: nil)
-    text = body.dup.force_encoding(Encoding::UTF_8)
-    return { error: :invalid, message: "vCard is not valid UTF-8" } unless text.valid_encoding?
-
-    card = Vcard::Card.parse(text)
+  # Stores a contact vCard sent by a CardDAV client, keeping the text exactly as sent.
+  # Returns { record: } or { error:, ... }. AddressBook#store_from_device decides between contacts and groups.
+  def self.store_from_device(address_book, resource_name, text, card, existing: nil)
     uid = card.uid.presence || existing&.uid || resource_name.delete_suffix(".vcf")
 
     if (other = address_book.contacts.where(uid: uid).where.not(id: existing&.id).first)
       return { error: :uid_conflict, resource_name: other.resource_name }
     end
-    if existing.nil? && address_book.contacts.exists?(resource_name: resource_name)
-      return { error: :hidden_resource }
-    end
 
     contact = existing || address_book.contacts.new(resource_name: resource_name)
     contact.uid = uid
     contact.vcard = text
-    contact.save ? { contact: contact } : { error: :invalid, message: contact.errors.full_messages.to_sentence }
-  rescue Vcard::ParseError => error
-    { error: :invalid, message: error.message }
+    contact.save ? { record: contact } : { error: :invalid, message: contact.errors.full_messages.to_sentence }
   end
 
   private

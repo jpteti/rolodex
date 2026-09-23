@@ -1,4 +1,4 @@
-<% content_for :title, "Contacts · Rolodex" %>
+<% content_for :title, @group ? "#{@group.name} · Rolodex" : "Contacts · Rolodex" %>
 
 <div class="row row--between">
   <h1>Contacts</h1>
@@ -12,6 +12,10 @@
       data: { controller: "search", turbo_frame: "contact_results", turbo_action: "replace" } do |form| %>
   <%= form.search_field :q, value: @query, placeholder: "Search name, organization, email, or phone",
         "aria-label": "Search contacts", autocomplete: "off", data: { action: "input->search#search" } %>
+  <% if @groups.any? %>
+    <%= form.select :group, options_from_collection_for_select(@groups, :id, :name, @group&.id), { include_blank: "All contacts" },
+          "aria-label": "Group", class: "search__group", data: { action: "change->search#search" } %>
+  <% end %>
   <label class="row search__option">
     <%= form.check_box :archived, { checked: @include_archived, data: { action: "change->search#search" } }, "1", nil %>
     Include archived

@@ -60,6 +60,10 @@
       <dt><%= row.label.presence || "URL" %></dt>
       <dd><%= row.value.match?(%r{\Ahttps?://}i) ? link_to(row.value, row.value, rel: "noopener noreferrer") : row.value %></dd>
     <% end %>
+    <% if (groups = @contact.groups.sorted.to_a).any? %>
+      <dt>Groups</dt>
+      <dd><%= safe_join(groups.map { |group| link_to(group.name, contacts_path(group: group.id)) }, ", ") %></dd>
+    <% end %>
     <% if editor.birthday.present? %><dt>Birthday</dt><dd><%= editor.birthday %></dd><% end %>
     <% if editor.note.present? %><dt>Notes</dt><dd class="note"><%= simple_format(editor.note) %></dd><% end %>
   </dl>

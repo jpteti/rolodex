@@ -227,6 +227,16 @@ module Vcard
       self
     end
 
+    # Apple Contacts groups are vCards with X-ADDRESSBOOKSERVER-KIND:group (vCard 4.0 uses KIND:group).
+    def group?
+      [ value("X-ADDRESSBOOKSERVER-KIND"), value("KIND") ].compact.any? { |kind| kind.casecmp?("group") }
+    end
+
+    # Member UIDs of a group card, from X-ADDRESSBOOKSERVER-MEMBER:urn:uuid:<UID> (or vCard 4.0 MEMBER).
+    def member_uids
+      (all("X-ADDRESSBOOKSERVER-MEMBER") + all("MEMBER")).map { |property| property.text.strip.sub(/\Aurn:uuid:/i, "") }.uniq
+    end
+
     # The label of a property: an Apple X-ABLabel on the same group, else its TYPE.
     def label_for(property)
       Vcard::Label.read(self, property)

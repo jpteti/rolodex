@@ -4,9 +4,7 @@ module Carddav
 
     def address_book = user.address_book
 
-    def contacts = address_book.contacts.visible_to_devices
-
-    def children = contacts.map { |contact| ContactResource.new(user, contact) }
+    def children = address_book.device_resources.map { |record| CardResource.new(user, record) }
 
     def reports
       [ Dav.prop(Dav::CARDDAV, "addressbook-multiget"), Dav.prop(Dav::CARDDAV, "addressbook-query"), Dav.prop(Dav::DAV, "sync-collection") ]
