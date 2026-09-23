@@ -61,3 +61,11 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "webauthn", "~> 3.4"
+
+# Rails 8.1 calls JSON.parse with a positional options hash, which json 3.0 rejects.
+gem "json", "~> 2.21"
+
+# Literal helps prevent errors
+gem "literal"

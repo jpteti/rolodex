@@ -22,13 +22,27 @@ bin/dev
 
 The app listens on http://localhost:3000.
 
+## Sign in
+
+The web UI uses passkeys and has no password login or sign-up page. To register the first passkey, or to recover after losing every passkey, print a setup link from a shell on the server:
+
+```bash
+bin/rails rolodex:setup_link
+```
+
+The task creates the user `owner` if it does not exist. Set `ROLODEX_USER=name` to use a different username. The link works once and expires after 15 minutes. After you sign in, add or remove passkeys on the Passkeys page.
+
+Passkeys are bound to the host the app runs on. Set `APP_ORIGIN` (for example `https://rolodex.example.com`) outside development. It defaults to `http://localhost:3000`.
+
 ## Run CI locally
 
 ```bash
 bin/ci
 ```
 
-`bin/ci` runs RuboCop, bundler-audit, the importmap audit, Brakeman, and the test suite. It exits non-zero when any step fails. GitHub Actions runs the same script on every pull request, including pull requests whose base is another feature branch.
+`bin/ci` runs RuboCop, bundler-audit, the importmap audit, Brakeman, the unit and integration tests, and the system tests. It exits non-zero when any step fails. GitHub Actions runs the same script on every pull request, including pull requests whose base is another feature branch.
+
+The system tests drive headless Chrome with a virtual passkey authenticator. When Chrome is not installed, Selenium Manager downloads Chrome for Testing into `~/.cache/selenium`, and the tests use it. Set `CHROME_BIN` to point at another Chrome binary.
 
 ## Stacked pull requests
 

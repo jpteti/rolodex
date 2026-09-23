@@ -1,0 +1,16 @@
+<%# locals: (mode:, options_url:, submit_url:, label:, name_field: false) %>
+<div data-controller="passkey"
+     data-passkey-mode-value="<%= mode %>"
+     data-passkey-options-url-value="<%= options_url %>"
+     data-passkey-submit-url-value="<%= submit_url %>">
+  <form data-action="submit->passkey#run" class="stack">
+    <% if name_field %>
+      <label class="field">
+        <span class="field__label">Passkey name</span>
+        <input type="text" data-passkey-target="name" placeholder="For example: iPhone" required>
+      </label>
+    <% end %>
+    <button type="submit" class="button button--primary" data-passkey-target="button"><%= label %></button>
+    <p class="flash flash--alert" data-passkey-target="error" role="alert" hidden></p>
+  </form>
+</div>

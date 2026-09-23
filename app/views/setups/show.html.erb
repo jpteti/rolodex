@@ -1,0 +1,7 @@
+<% content_for :title, "Set up a passkey · Rolodex" %>
+
+<section class="narrow">
+  <h1>Set up a passkey</h1>
+  <p class="muted">Register a passkey for <strong><%= @setup_link.user.username %></strong>. This link works once and expires <%= time_ago_in_words(@setup_link.expires_at) %> from now.</p>
+  <%= render "shared/passkey_button", mode: "register", options_url: setup_options_path(params[:token]), submit_url: setup_path(params[:token]), label: "Register passkey", name_field: true %>
+</section>

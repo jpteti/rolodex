@@ -24,6 +24,23 @@
   </head>
 
   <body>
-    <%= yield %>
+    <header class="site-header">
+      <%= link_to "Rolodex", root_path, class: "site-header__brand" %>
+      <% if authenticated? %>
+        <nav class="site-header__nav">
+          <%= yield :nav %>
+          <%= link_to "Passkeys", passkeys_path %>
+          <%= button_to "Sign out", session_path, method: :delete, class: "button button--link" %>
+        </nav>
+      <% end %>
+    </header>
+
+    <main class="page">
+      <% flash.each do |type, message| %>
+        <p class="flash flash--<%= type %>" role="status"><%= message %></p>
+      <% end %>
+
+      <%= yield %>
+    </main>
   </body>
 </html>
