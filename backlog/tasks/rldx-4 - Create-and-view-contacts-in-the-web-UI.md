@@ -1,10 +1,11 @@
 ---
 id: RLDX-4
 title: Create and view contacts in the web UI
-status: To Do
-assignee: []
+status: In Progress
+assignee:
+  - '@claude'
 created_date: '2026-09-23 04:30'
-updated_date: '2026-09-23 04:32'
+updated_date: '2026-09-23 04:58'
 labels:
   - web
   - stack-skeleton
@@ -37,3 +38,21 @@ The first user-visible slice: add a contact on the web and see it listed. Decisi
 <!-- DOD:BEGIN -->
 - [ ] #1 All PRs for this task merged to main through the stack workflow in doc-1, with bin/ci passing in GitHub Actions
 <!-- DOD:END -->
+
+## Implementation Plan
+
+<!-- SECTION:PLAN:BEGIN -->
+1. Write a Vcard module (parse, unfold/fold at 75 octets, escaping, groups, ordered params) that keeps every property so raw cards round-trip.
+2. AddressBook (one per user, ctag counter) and Contact (raw vcard, uid, resource_name, etag, extracted display/given/family/org/emails/phones, sort_key).
+3. Extract columns from the vCard on every vCard change; sort_key = family + given, else organization.
+4. ContactForm builds a vCard 3.0 (UID, N, FN, ORG, EMAIL, TEL, X-ABSHOWAS for company-only) for new contacts.
+5. Contacts index/show/new/create scoped to Current.user's address book; root goes to the list.
+6. Model tests for vCard parsing, generation, and extraction round trips; integration and system tests for the web flow.
+<!-- SECTION:PLAN:END -->
+
+## Implementation Notes
+
+<!-- SECTION:NOTES:BEGIN -->
+Wrote an in-house vCard parser instead of a gem: the CardDAV tasks need every property kept in order with raw values, which vcard/vpim do not guarantee.
+Verified with bin/ci: 34 tests + 2 system tests (Chrome virtual authenticator signs in, then the contact form creates Katherine Johnson with two emails and one phone).
+<!-- SECTION:NOTES:END -->

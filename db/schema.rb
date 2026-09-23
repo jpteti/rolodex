@@ -10,7 +10,37 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_044527) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_045549) do
+  create_table "address_books", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "ctag", default: 0, null: false
+    t.string "name", default: "Contacts", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_address_books_on_user_id", unique: true
+  end
+
+  create_table "contacts", force: :cascade do |t|
+    t.integer "address_book_id", null: false
+    t.datetime "created_at", null: false
+    t.string "display_name", null: false
+    t.text "emails"
+    t.string "etag", null: false
+    t.string "family_name"
+    t.string "given_name"
+    t.string "organization"
+    t.text "phones"
+    t.string "resource_name", null: false
+    t.string "sort_key", null: false
+    t.string "uid", null: false
+    t.datetime "updated_at", null: false
+    t.text "vcard", null: false
+    t.index ["address_book_id", "resource_name"], name: "index_contacts_on_address_book_id_and_resource_name", unique: true
+    t.index ["address_book_id", "sort_key"], name: "index_contacts_on_address_book_id_and_sort_key"
+    t.index ["address_book_id", "uid"], name: "index_contacts_on_address_book_id_and_uid", unique: true
+    t.index ["address_book_id"], name: "index_contacts_on_address_book_id"
+  end
+
   create_table "passkeys", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "external_id", null: false
@@ -53,6 +83,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_044527) do
     t.index ["webauthn_id"], name: "index_users_on_webauthn_id", unique: true
   end
 
+  add_foreign_key "address_books", "users"
+  add_foreign_key "contacts", "address_books"
   add_foreign_key "passkeys", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "setup_links", "users"

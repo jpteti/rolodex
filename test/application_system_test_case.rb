@@ -19,15 +19,26 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   end
 
   teardown do
+    @authenticator&.remove!
     WebAuthn.configuration.allowed_origins = [ Rails.application.config.x.app_origin ]
     WebAuthn.configuration.rp_id = URI.parse(Rails.application.config.x.app_origin).host
   end
 
   private
+    # Registers a passkey through a setup link, which also signs the user in.
+    def sign_in_with_new_passkey(user = users(:owner))
+      visit new_session_path
+      add_virtual_authenticator
+      visit setup_path(SetupLink.issue(user).token)
+      fill_in "Passkey name", with: "Test"
+      click_on "Register passkey"
+      assert_button "Sign out"
+    end
+
     def add_virtual_authenticator
       options = Selenium::WebDriver::VirtualAuthenticatorOptions.new(
         protocol: :ctap2, transport: :internal, resident_key: true, user_verification: true, user_verified: true
       )
-      page.driver.browser.add_virtual_authenticator(options)
+      @authenticator = page.driver.browser.add_virtual_authenticator(options)
     end
 end
