@@ -55,13 +55,12 @@ class Carddav::DavController < Carddav::BaseController
       document = Dav.parse_xml(request.raw_post) or raise Dav::BadRequest, "Missing body"
       root = document.root
 
-      unless resource.is_a?(Carddav::AddressBookCollection) && root.namespace&.href == Dav::CARDDAV
-        return render_report_unsupported
-      end
+      return render_report_unsupported unless resource.is_a?(Carddav::AddressBookCollection)
 
-      case root.name
-      when "addressbook-multiget" then addressbook_multiget(resource, root)
-      when "addressbook-query" then addressbook_query(resource, root)
+      case [ root.namespace&.href, root.name ]
+      in [ Dav::CARDDAV, "addressbook-multiget" ] then addressbook_multiget(resource, root)
+      in [ Dav::CARDDAV, "addressbook-query" ] then addressbook_query(resource, root)
+      in [ Dav::DAV, "sync-collection" ] then sync_collection(resource, root)
       else render_report_unsupported
       end
     end
@@ -177,6 +176,30 @@ class Carddav::DavController < Carddav::BaseController
       multistatus = Dav::Multistatus.new
       book.children.each { |child| add_properties(multistatus, child, requested) }
       render_multistatus multistatus
+    end
+
+    # RFC 6578: with no token, every member; with a token, members changed since it and 404s for removed ones.
+    def sync_collection(book, root)
+      token = root.at_xpath("d:sync-token", "d" => Dav::DAV)&.text.to_s.strip
+      result = book.address_book.changes_since(token) or return render_precondition_error("valid-sync-token", Dav::DAV, :forbidden)
+      requested = Dav.requested_properties(root)
+      multistatus = Dav::Multistatus.new
+
+      if result[:changes].nil?
+        book.children.each { |child| add_properties(multistatus, child, requested) }
+      else
+        visible = book.contacts.where(resource_name: result[:changes].keys).index_by(&:resource_name)
+        result[:changes].each_key do |resource_name|
+          if (contact = visible[resource_name])
+            add_properties(multistatus, Carddav::ContactResource.new(current_user, contact), requested)
+          else
+            multistatus.add_status(Carddav::Paths.contact(current_user, resource_name), "HTTP/1.1 404 Not Found")
+          end
+        end
+      end
+
+      response.headers["DAV"] = DAV_HEADER
+      render body: multistatus.to_xml(sync_token: result[:token]), status: :multi_status, content_type: XML_TYPE
     end
 
     def add_properties(multistatus, resource, requested)

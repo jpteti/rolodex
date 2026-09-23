@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_23_051321) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_23_051602) do
   create_table "address_books", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "ctag", default: 0, null: false
@@ -89,6 +89,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_051321) do
     t.index ["user_id"], name: "index_setup_links_on_user_id"
   end
 
+  create_table "sync_changes", force: :cascade do |t|
+    t.integer "address_book_id", null: false
+    t.datetime "created_at", null: false
+    t.boolean "removed", default: false, null: false
+    t.string "resource_name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["address_book_id", "id"], name: "index_sync_changes_on_address_book_id_and_id"
+    t.index ["address_book_id"], name: "index_sync_changes_on_address_book_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -104,4 +114,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_23_051321) do
   add_foreign_key "passkeys", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "setup_links", "users"
+  add_foreign_key "sync_changes", "address_books"
 end
