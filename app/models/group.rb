@@ -37,8 +37,21 @@ class Group < ApplicationRecord
     address_book.contacts.where(uid: member_uids)
   end
 
-  # The vCard served to devices.
-  def served_vcard = vcard
+  # The vCard served to devices. Members that devices cannot see (archived or trashed contacts) are left out;
+  # Rolodex keeps those memberships so unarchiving restores them.
+  def served_vcard
+    hidden = hidden_member_uids
+    return vcard if hidden.empty?
+
+    served = Vcard::Card.parse(vcard)
+    served.properties.reject! { |property| member_property?(property) && hidden.include?(member_uid(property)) }
+    served.to_s
+  end
+
+  def hidden_member_uids
+    address_book.contacts.where(uid: card.member_uids).where.not(archived_at: nil)
+      .or(address_book.contacts.where(uid: card.member_uids).where.not(trashed_at: nil)).pluck(:uid).to_set
+  end
 
   def etag = %("#{Digest::SHA256.hexdigest(served_vcard)[0, 32]}")
 
@@ -84,8 +97,10 @@ class Group < ApplicationRecord
   end
 
   def remove_member(contact_uid)
+    return true unless card.member_uids.include?(contact_uid)
+
     edited = card
-    edited.properties.reject! { |p| p.name.in?(%w[X-ADDRESSBOOKSERVER-MEMBER MEMBER]) && p.text.strip.sub(/\Aurn:uuid:/i, "") == contact_uid }
+    edited.properties.reject! { |property| member_property?(property) && member_uid(property) == contact_uid }
     update(vcard: edited.to_s)
   end
 
@@ -98,11 +113,24 @@ class Group < ApplicationRecord
 
     group = existing || address_book.groups.new(resource_name: resource_name)
     group.uid = uid
-    group.vcard = text
+    group.vcard = existing ? existing.keep_hidden_members(text, card) : text
     group.save ? { record: group } : { error: :invalid, message: group.errors.full_messages.to_sentence }
   end
 
+  # A device never sees hidden members, so its PUT leaves them out. Adds them back to the stored vCard.
+  def keep_hidden_members(text, incoming)
+    missing = hidden_member_uids.to_a - incoming.member_uids
+    return text if missing.empty?
+
+    lines = missing.map { |uid| "X-ADDRESSBOOKSERVER-MEMBER:urn:uuid:#{uid}\r\n" }.join
+    text.sub(/END:VCARD\s*\z/i) { "#{lines}#{it}" }
+  end
+
   private
+    def member_property?(property) = property.name.in?(%w[ X-ADDRESSBOOKSERVER-MEMBER MEMBER ])
+
+    def member_uid(property) = property.text.strip.sub(/\Aurn:uuid:/i, "")
+
     def extract_fields
       self.uid = card.uid if card.uid.present?
       self.name = card.value("FN").presence || card["N"]&.components&.first.presence || "Untitled group"

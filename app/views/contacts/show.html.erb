@@ -68,6 +68,9 @@
 <% all_groups = @contact.address_book.groups.sorted.to_a %>
 <% if all_groups.any? %>
   <h2>Groups</h2>
+  <% if @contact.archived? %>
+    <p class="muted">Devices do not see this contact in its groups while it is archived. Rolodex remembers the groups and restores them when you unarchive.</p>
+  <% end %>
   <%= form_with url: contact_groups_path(@contact), method: :patch, class: "stack", id: "contact_groups" do |form| %>
     <div class="row">
       <% member_of = @contact.groups.pluck(:id) %>
