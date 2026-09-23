@@ -16,14 +16,13 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
     Capybara.server_host = "localhost"
     Capybara.server_port = 3111
     Capybara.app_host = "http://localhost:3111"
-    WebAuthn.configuration.allowed_origins = [ "http://localhost:3111" ]
-    WebAuthn.configuration.rp_id = "localhost"
+    @app_origins = Rails.configuration.x.app_origins
+    Rails.configuration.x.app_origins = [ "http://localhost:3111" ]
   end
 
   teardown do
     @authenticator&.remove!
-    WebAuthn.configuration.allowed_origins = [ Rails.application.config.x.app_origin ]
-    WebAuthn.configuration.rp_id = URI.parse(Rails.application.config.x.app_origin).host
+    Rails.configuration.x.app_origins = @app_origins
   end
 
   private

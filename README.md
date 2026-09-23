@@ -22,6 +22,29 @@ bin/dev
 
 The app listens on http://localhost:3000.
 
+## Test sync with Apple Contacts locally
+
+Apple Contacts syncs CardDAV only over HTTPS, so it cannot reach `http://localhost:3000`. Use [puma-dev](https://github.com/puma/puma-dev) as an HTTPS proxy in front of `bin/dev`:
+
+```bash
+echo 3000 > ~/.puma-dev/rolodex
+bin/dev
+```
+
+puma-dev then serves the app at `https://rolodex.test` with a certificate macOS trusts. To use the web UI there, register a passkey with the `https://rolodex.test` link that `bin/rails rolodex:setup_link` prints. A passkey registered on `localhost` does not work on `rolodex.test`. Use proxy mode (a file holding the port) instead of a symlink: puma-dev's launcher fails on project paths that contain spaces.
+
+Add the account in macOS Contacts (Settings → Accounts → + → Other Contacts Account → CardDAV):
+
+| Field | Value |
+|---|---|
+| Account Type | Manual |
+| User Name | your Rolodex username (default `owner`) |
+| Password | an app password |
+| Server Address | `rolodex.test` |
+| Server Path | `/dav/principals/<username>/` |
+| Port | `443` |
+| Use SSL | On |
+
 ## Sign in
 
 The web UI uses passkeys and has no password login or sign-up page. To register the first passkey, or to recover after losing every passkey, print a setup link from a shell on the server:
@@ -32,7 +55,7 @@ bin/rails rolodex:setup_link
 
 The task creates the user `owner` if it does not exist. Set `ROLODEX_USER=name` to use a different username. The link works once and expires after 15 minutes. After you sign in, add or remove passkeys on the Passkeys page.
 
-Passkeys are bound to the host the app runs on. Set `APP_ORIGIN` (for example `https://rolodex.example.com`) outside development. It defaults to `http://localhost:3000`.
+Passkeys are bound to the host where you register them, so each origin needs its own passkey. `APP_ORIGIN` lists the origins that may use passkeys, separated by commas. Set it to your domain in production, for example `https://rolodex.example.com`. Development allows `http://localhost:3000` and `https://rolodex.test` (puma-dev), and the setup task prints a link for each. Open the link for the host you want to use.
 
 ## Run CI locally
 
