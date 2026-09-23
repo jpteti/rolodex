@@ -24,6 +24,8 @@ module Carddav
 
     def ctag = %("#{address_book.ctag}")
 
+    def privileges = super + %w[ write write-content write-properties bind unbind ]
+
     private
       def resource_types(xml)
         super
