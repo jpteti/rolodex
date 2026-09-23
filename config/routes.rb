@@ -15,7 +15,7 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   resources :imports, only: %i[ new create show ]
-  resources :groups, only: :index
+  resources :groups, only: %i[ index create edit update destroy ]
   resources :app_passwords, only: %i[ index create destroy ]
 
   # CardDAV. Clients find the service from /.well-known/carddav (RFC 6764) or by probing "/".
@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   resources :contacts do
     resource :archive, only: %i[ create destroy ]
     resource :photo, only: %i[ show update destroy ]
+    resource :groups, only: :update, controller: "contact_groups"
   end
   get "archive", to: "archives#index", as: :archived_contacts
 

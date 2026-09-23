@@ -1,0 +1,10 @@
+<% content_for :title, "Rename group · Rolodex" %>
+
+<p><%= link_to "← Groups", groups_path %></p>
+<h1>Rename group</h1>
+
+<%= form_with model: @group, class: "stack narrow" do |form| %>
+  <% if @group.errors.any? %><p class="errors"><%= @group.errors.full_messages.to_sentence %></p><% end %>
+  <label class="field"><span class="field__label">Name</span><%= form.text_field :name, required: true %></label>
+  <div><%= form.submit "Save", class: "button button--primary" %></div>
+<% end %>
