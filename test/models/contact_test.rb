@@ -31,7 +31,7 @@ class ContactTest < ActiveSupport::TestCase
   end
 
   test "extracts columns from a vCard written elsewhere" do
-    contact = @book.contacts.create!(uid: "x", resource_name: "x.vcf", vcard: VcardTest::APPLE_CARD)
+    contact = @book.contacts.create!(uid: "x", resource_name: "x.vcf", vcard: file_fixture("apple_contact.vcf").read)
 
     assert_equal "1234-ABCD", contact.uid
     assert_equal "Johnny Appleseed", contact.display_name

@@ -1,25 +1,48 @@
 class ContactsController < ApplicationController
-  before_action :set_contact, only: :show
+  before_action :set_contact, only: %i[ show edit update destroy ]
 
   def index
     @contacts = address_book.contacts.active.sorted
   end
 
   def show
+    @editor = ContactEditor.for(@contact)
   end
 
   def new
-    @form = ContactForm.new
+    @editor = ContactEditor.blank(uid: SecureRandom.uuid.upcase)
   end
 
   def create
-    @form = ContactForm.new(contact_params)
+    uid = SecureRandom.uuid.upcase
+    @editor = ContactEditor.blank(uid: uid).assign(contact_params)
 
-    if @form.save(address_book)
-      redirect_to @form.contact, notice: "Contact created."
+    if @editor.valid?
+      contact = address_book.contacts.create!(uid: uid, resource_name: "#{uid}.vcf", vcard: @editor.to_vcard)
+      redirect_to contact, notice: "Contact created."
     else
       render :new, status: :unprocessable_content
     end
+  end
+
+  def edit
+    @editor = ContactEditor.for(@contact)
+  end
+
+  def update
+    @editor = ContactEditor.for(@contact).assign(contact_params)
+
+    if @editor.valid? && @contact.update(vcard: @editor.to_vcard(@contact.vcard))
+      redirect_to @contact, notice: "Contact saved."
+    else
+      render :edit, status: :unprocessable_content
+    end
+  end
+
+  # Deleting on the web matches deleting on a device: the contact moves to the Trash.
+  def destroy
+    @contact.trash!
+    redirect_to contacts_path, notice: "#{@contact.display_name} moved to the Trash."
   end
 
   private
@@ -32,6 +55,11 @@ class ContactsController < ApplicationController
     end
 
     def contact_params
-      params.expect(contact_form: [ :given_name, :family_name, :organization, emails: [], phones: [] ])
+      row = %i[ ref label value ]
+      params.expect(contact: [
+        *ContactEditor::SINGLE_FIELDS,
+        emails: [ row ], phones: [ row ], urls: [ row ],
+        addresses: [ [ :ref, :label, *ContactEditor::ADDRESS_PARTS ] ]
+      ])
     end
 end

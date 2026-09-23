@@ -188,3 +188,31 @@ legend { padding: 0; margin-bottom: 0.25rem; }
 .contact-name { font-weight: 600; }
 .secret { font-size: 1.1rem; letter-spacing: 0.05em; }
 .flash--archived { background: var(--color-border); }
+
+.contact-form { max-width: 40rem; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+}
+
+.edit-row {
+  display: grid;
+  grid-template-columns: 8rem 1fr auto;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.edit-row__address { display: grid; gap: 0.5rem; }
+.edit-row__split { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 0.5rem; }
+.edit-row__remove { padding-top: 0.5rem; color: var(--color-danger); }
+
+@media (max-width: 36rem) {
+  .edit-row { grid-template-columns: 1fr auto; }
+  .edit-row__label { grid-column: 1 / -1; }
+  .edit-row__split { grid-template-columns: 1fr; }
+}
+
+.address, .note p { margin: 0; }
+.note p + p { margin-top: 0.5rem; }

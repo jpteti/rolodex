@@ -17,10 +17,14 @@
       <%= button_to "Restore", restore_trashed_contact_path(@contact), class: "button" %>
       <%= button_to "Delete permanently", trashed_contact_path(@contact), method: :delete, class: "button button--danger",
             form: { data: { turbo_confirm: "Permanently delete #{@contact.display_name}? This cannot be undone." } } %>
-    <% elsif @contact.archived? %>
-      <%= button_to "Unarchive", contact_archive_path(@contact), method: :delete, class: "button" %>
     <% else %>
-      <%= button_to "Archive", contact_archive_path(@contact), class: "button" %>
+      <%= link_to "Edit", edit_contact_path(@contact), class: "button" %>
+      <% if @contact.archived? %>
+        <%= button_to "Unarchive", contact_archive_path(@contact), method: :delete, class: "button" %>
+      <% else %>
+        <%= button_to "Archive", contact_archive_path(@contact), class: "button" %>
+      <% end %>
+      <%= button_to "Delete", contact_path(@contact), method: :delete, class: "button button--danger" %>
     <% end %>
   </div>
 </div>
@@ -31,18 +35,29 @@
   <p class="flash flash--archived">Archived <%= l @contact.archived_at, format: :long %>. This contact is hidden from your devices.</p>
 <% end %>
 
+<% editor = @editor %>
 <div class="card">
   <dl class="details">
-    <% if @contact.given_name %><dt>First name</dt><dd><%= @contact.given_name %></dd><% end %>
-    <% if @contact.family_name %><dt>Last name</dt><dd><%= @contact.family_name %></dd><% end %>
-    <% if @contact.organization %><dt>Organization</dt><dd><%= @contact.organization %></dd><% end %>
-    <% @contact.card.all("EMAIL").each do |email| %>
-      <dt><%= @contact.card.label_for(email) || "email" %></dt>
-      <dd><%= mail_to email.text %></dd>
+    <% { "Prefix" => editor.prefix, "First name" => editor.given_name, "Middle name" => editor.middle_name,
+         "Last name" => editor.family_name, "Suffix" => editor.suffix, "Nickname" => editor.nickname,
+         "Organization" => editor.organization, "Job title" => editor.job_title }.each do |label, value| %>
+      <% if value.present? %><dt><%= label %></dt><dd><%= value %></dd><% end %>
     <% end %>
-    <% @contact.card.all("TEL").each do |phone| %>
-      <dt><%= @contact.card.label_for(phone) || "phone" %></dt>
-      <dd><%= link_to phone.text, "tel:#{phone.text.gsub(/[^\d+]/, '')}" %></dd>
+    <% editor.emails.each do |row| %>
+      <dt><%= row.label.presence || "email" %></dt><dd><%= mail_to row.value %></dd>
     <% end %>
+    <% editor.phones.each do |row| %>
+      <dt><%= row.label.presence || "phone" %></dt><dd><%= link_to row.value, "tel:#{row.value.gsub(/[^\d+]/, '')}" %></dd>
+    <% end %>
+    <% editor.addresses.each do |row| %>
+      <dt><%= row.label.presence || "address" %></dt>
+      <dd class="address"><%= safe_join([ row.street, [ row.city, row.region, row.postal_code ].compact_blank.join(" "), row.country ].compact_blank, tag.br) %></dd>
+    <% end %>
+    <% editor.urls.each do |row| %>
+      <dt><%= row.label.presence || "URL" %></dt>
+      <dd><%= row.value.match?(%r{\Ahttps?://}i) ? link_to(row.value, row.value, rel: "noopener noreferrer") : row.value %></dd>
+    <% end %>
+    <% if editor.birthday.present? %><dt>Birthday</dt><dd><%= editor.birthday %></dd><% end %>
+    <% if editor.note.present? %><dt>Notes</dt><dd class="note"><%= simple_format(editor.note) %></dd><% end %>
   </dl>
 </div>

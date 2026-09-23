@@ -8,9 +8,10 @@ class ContactsTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_difference -> { Contact.count }, 1 do
-      post contacts_url, params: { contact_form: {
+      post contacts_url, params: { contact: {
         given_name: "Grace", family_name: "Hopper", organization: "US Navy",
-        emails: [ "grace@example.com", "hopper@navy.example", "" ], phones: [ "555-0100", "555-0101" ]
+        emails: { "0" => { value: "grace@example.com" }, "1" => { value: "hopper@navy.example", label: "work" }, "2" => { value: "" } },
+        phones: { "0" => { value: "555-0100" }, "1" => { value: "555-0101", label: "mobile" } }
       } }
     end
 
@@ -28,10 +29,10 @@ class ContactsTest < ActionDispatch::IntegrationTest
 
   test "an empty form shows an error" do
     assert_no_difference -> { Contact.count } do
-      post contacts_url, params: { contact_form: { given_name: "", emails: [ "" ] } }
+      post contacts_url, params: { contact: { given_name: "", emails: { "0" => { value: "" } } } }
     end
     assert_response :unprocessable_content
-    assert_select ".errors li", "Enter a name, organization, email, or phone"
+    assert_select ".errors li", "Enter a name, organization, email, phone, address, or URL"
   end
 
   test "the list shows contacts in sort order" do
