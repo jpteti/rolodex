@@ -19,6 +19,19 @@ class SetupLinkTaskTest < ActiveSupport::TestCase
     assert_in_delta 15.minutes.from_now, link.expires_at, 5.seconds
   end
 
+  test "prints one link per configured origin" do
+    origins = Rails.configuration.x.app_origins
+    Rails.configuration.x.app_origins = [ "http://localhost:3000", "https://rolodex.test" ]
+
+    output = capture_io { Rake::Task["rolodex:setup_link"].invoke }.first
+    tokens = output.scan(%r{\A|^(https?://[^/]+)/setup/(\S+)$}).reject { |match| match.compact.empty? }
+
+    assert_equal [ "http://localhost:3000", "https://rolodex.test" ], tokens.map(&:first)
+    assert_equal 1, tokens.map(&:last).uniq.size
+  ensure
+    Rails.configuration.x.app_origins = origins
+  end
+
   test "reuses an existing user" do
     assert_no_difference -> { User.count } do
       with_env("ROLODEX_USER" => "owner") { capture_io { Rake::Task["rolodex:setup_link"].invoke } }
