@@ -34,10 +34,22 @@ class Contact < ApplicationRecord
     super
   end
 
+  def reload(...)
+    @card = nil
+    super
+  end
+
   # Builds the vCard for a new contact from simple form fields.
   def self.build_from_fields(address_book, fields)
     uid = SecureRandom.uuid.upcase
     address_book.contacts.new(uid: uid, resource_name: "#{uid}.vcf", vcard: ContactCard.new(**fields.to_h.symbolize_keys, uid: uid).to_s)
+  end
+
+  def photo = ContactPhoto.read(card)
+
+  def initials
+    source = [ given_name, family_name ].compact_blank.presence || [ display_name ]
+    source.map { |part| part.to_s[/\p{Alnum}/] }.compact.join.first(2).upcase
   end
 
   def archived? = archived_at.present?
@@ -99,6 +111,7 @@ class Contact < ApplicationRecord
       self.phones = card.all("TEL").map(&:text).compact_blank
       self.display_name = card.value("FN").presence || [ given_name, family_name ].compact.join(" ").presence ||
         organization || emails.first || phones.first || "No Name"
+      self.has_photo = card["PHOTO"].present?
       self.sort_key = ([ family_name, given_name ].compact.join(" ").presence || organization || display_name).downcase
       self.etag = %("#{Digest::SHA256.hexdigest(vcard)[0, 32]}")
     rescue Vcard::ParseError => error

@@ -3,4 +3,17 @@
 <p><%= link_to "← #{@contact.display_name}", @contact %></p>
 <h1>Edit contact</h1>
 
+<section class="row photo-editor" id="photo">
+  <%= render "contacts/avatar", contact: @contact, size: :large %>
+  <div class="stack">
+    <%= form_with scope: :photo, url: contact_photo_path(@contact), method: :patch, multipart: true, class: "row" do |form| %>
+      <label class="field"><span class="field__label">Photo</span><%= form.file_field :file, accept: "image/*", required: true %></label>
+      <%= form.submit @contact.has_photo? ? "Replace photo" : "Upload photo", class: "button" %>
+    <% end %>
+    <% if @contact.has_photo? %>
+      <%= button_to "Remove photo", contact_photo_path(@contact), method: :delete, class: "button button--link button--danger" %>
+    <% end %>
+  </div>
+</section>
+
 <%= render "contacts/form", editor: @editor, url: contact_path(@contact), method: :patch, submit: "Save" %>

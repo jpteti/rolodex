@@ -216,3 +216,28 @@ legend { padding: 0; margin-bottom: 0.25rem; }
 
 .address, .note p { margin: 0; }
 .note p + p { margin-top: 0.5rem; }
+
+.avatar {
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--color-border);
+}
+
+.avatar--small { width: 2.25rem; height: 2.25rem; font-size: 0.85rem; }
+.avatar--large { width: 4.5rem; height: 4.5rem; font-size: 1.5rem; }
+
+.avatar--initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.contact-row { flex-wrap: nowrap; }
+.photo-editor { margin-bottom: 1.5rem; }
+.photo-editor input[type="file"] { width: auto; max-width: 100%; }
+
+.row > h1 { margin: 0; }
+.row--between { margin-bottom: var(--space); }

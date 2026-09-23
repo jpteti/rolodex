@@ -25,6 +25,7 @@ Rails.application.routes.draw do
 
   resources :contacts do
     resource :archive, only: %i[ create destroy ]
+    resource :photo, only: %i[ show update destroy ]
   end
   get "archive", to: "archives#index", as: :archived_contacts
 
